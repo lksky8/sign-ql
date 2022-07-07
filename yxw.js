@@ -6,7 +6,7 @@
  变量：yxwlogin='账号&密码'  多个账号用换行分割 
  定时：一天一次
  cron：10 8 * * *
-
+ 需要安装MD5模块，node
  */
  const md5 = require('md5');
  const $ = new Env('游侠网');
