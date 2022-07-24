@@ -1,6 +1,6 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 日期：2022-7-22
+ 日期：2022-7-24
  网站：3dmgame论坛签到
  功能：签到、抽奖，金币可换现金买游戏
  变量：bbs3dmck='cookie'  多个账号用换行分割 
