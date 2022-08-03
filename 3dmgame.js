@@ -258,7 +258,7 @@ function checkgold(timeout = 3 * 1000) {
 					username = getinformation('访问我的空间">','</a></strong>',data);
 					formhash = getinformation('formhash=','">退出</a>',data);
 					log(`[${username}]目前金元：${jinyuan}，目前积分：${jifen}`)
-					msg += `[${username}]目前金元：${jinyuan}，目前积分：${jifen}`
+					msg += `\n[${username}]目前金元：${jinyuan}，目前积分：${jifen}`
 
 				} else {
 
