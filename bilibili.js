@@ -10,7 +10,7 @@
  export bzck='ck1@ck2 '  多个账号用 @ 或者 换行 分割
  export bztb="" #true开启随机投币，false关闭随机投币
  export bzdhyb="" #true开启银瓜子兑换硬币
- export bzvipgift="" #B站大会员权益 1为B币劵，2为会员购优惠券，3为漫画福利券，4为会员购运费券每个月28号自动领取(非会员默认跳过任务)
+ export bzvipgift="" #B站大会员权益 1为B币劵，2为会员购优惠券，3为.福利券，4为会员购运费券每个月28号自动领取(非会员默认跳过任务)
  export bzbicd="" #true B币券过期前进行充电，只会在每个月28号运行
  export bzcdmid="" #充电up主id，不填默认自己，只会在每个月28号运行
  export bztbdz="" #投币点赞true 默认不点赞
@@ -237,7 +237,7 @@ function manga_sign(timeout = 3 * 1000) {
                     msg +='\n【B站漫画签到】今日已签到过'
 				} else if(result.code == 0){
 					log('【B站漫画签到】签到成功')
-					msg += `【B站漫画签到】签到成功`
+					msg += `\n【B站漫画签到】签到成功`
                 } else{
 					log(`${JSON.stringify(error)}`)
                     log(`${$.name} API请求失败，请检查网路重试`);
