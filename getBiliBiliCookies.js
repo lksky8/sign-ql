@@ -2,7 +2,7 @@
  * 扫码获取B站cookie，此方式得到的cookie有效期未知，
  * cron 0
  */
-const $ = new Env('扫码获取京东cookie');
+const $ = new Env('扫码获取B站cookie');
 const qrcode = require('qrcode-terminal');
 !(async () => {
   await generateQrcode();
