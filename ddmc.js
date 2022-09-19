@@ -1,6 +1,6 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 日期：2022-9-10
+ 更新日期：2022-9-19
  软件：叮咚买菜App
  功能：签到-叮咚鱼塘-叮咚果园
  抓包：http://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw?鱼塘翻牌包
