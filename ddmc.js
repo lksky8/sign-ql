@@ -9,7 +9,7 @@
  注意：station前面加?号，cookie是&DDXQSESSID=XXXXXXXXXXXXX；多个账号用 @ 或者 换行 分割
  定时一天3次
  鱼塘饲料瓶大于55会停止喂鱼，以免浪费
-
+ 脚本还在测试中
  cron: 22 7,10,16 * * *
 */
 
