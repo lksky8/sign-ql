@@ -107,7 +107,7 @@
        log(
          `\n=================== 共找到 ${tybodyArr.length} 个账号 ===================`
        );
- 
+       log('★★★★★低调使用，别再挂到咸鱼上卖10块钱了，这种行为很愚蠢(눈_눈)★★★★★')
        for (let index = 0; index < tybodyArr.length; index++) {
          ua = User_Agents[uaNum + index];
  
@@ -125,7 +125,7 @@
  
          msg += `\n第${num}个账号运行结果：`;
 
-         log('低调使用，别再挂到咸鱼上卖10块钱了，这种行为很愚蠢(눈_눈)')
+         
          log("【开始获取AU】");
          await refreshAu();
          await $.wait(2 * 1000);
