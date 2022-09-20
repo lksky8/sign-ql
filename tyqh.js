@@ -12,9 +12,9 @@
 
  [task_local]
  #统一茄皇
- 10 12,18 * * *  https://raw.githubusercontent.com/LinYuanovo/scripts/main/tyqh.js, tag=统一茄皇, enabled=true
+ 10 12,18 * * *  https://raw.githubusercontent.com/lksky8/sign-ql/main/tyqh.js, tag=统一茄皇, enabled=true
  [rewrite_local]
- http://api.xiaoyisz.com/qiehuang/ga/public/api/login url script-request-header https://raw.githubusercontent.com/LinYuanovo/scripts/main/tyqh.js
+ http://api.xiaoyisz.com/qiehuang/ga/public/api/login url script-request-header https://raw.githubusercontent.com/lksky8/sign-ql/main/tyqh.js
  [MITM]
  hostname = api.xiaoyisz.com
 
@@ -108,10 +108,6 @@
          `\n=================== 共找到 ${tybodyArr.length} 个账号 ===================`
        );
  
-       if (debug) {
-         log(`【debug】 这是你的全部账号数组:\n ${tybodyArr}`);
-       }
- 
        for (let index = 0; index < tybodyArr.length; index++) {
          ua = User_Agents[uaNum + index];
  
@@ -127,12 +123,9 @@
  
          log(`\n========= 开始【第 ${num} 个账号】=========\n`);
  
-         if (debug) {
-           log(`【debug】 这是你的第 ${num} 个账号数组:\n ${tybody}`);
-         }
- 
          msg += `\n第${num}个账号运行结果：`;
- 
+
+         log('低调使用，别再挂到咸鱼上卖10块钱了，这种行为很愚蠢(눈_눈)')
          log("【开始获取AU】");
          await refreshAu();
          await $.wait(2 * 1000);
@@ -223,22 +216,11 @@
      body: `${tybody}`,
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 获取AU 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.post(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 获取AU 返回data==============`
-             );
-             log(data);
-           }
- 
+
            let result = JSON.parse(data);
            if (result.code == 0) {
              log(`获取AU成功`);
@@ -277,22 +259,10 @@
      },
    };
    return new Promise(async (resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 朋友列表 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 朋友列表 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            if (result.code == 904) {
              refreshAu();
@@ -358,24 +328,10 @@
          "Content-Type": "application/json",
        },
      };
-     if (debug) {
-       log(
-         `\n【debug】=============== 这是 偷好友阳光 请求 url ===============`
-       );
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 偷好友阳光 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            if (result.code == 904) {
              refreshAu();
@@ -415,20 +371,8 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 上报任务 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(url, async (error, response, data) => {
        try {
-         if (debug) {
-           log(
-             `\n\n【debug】===============这是 上报任务 返回data==============`
-           );
-           log(data);
-         }
- 
          let result = JSON.parse(data);
          if (result.code == 904) {
            refreshAu();
@@ -467,20 +411,8 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 领取奖励 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(url, async (error, response, data) => {
        try {
-         if (debug) {
-           log(
-             `\n\n【debug】===============这是 领取奖励 返回data==============`
-           );
-           log(data);
-         }
- 
          let result = JSON.parse(data);
          if (result.code == 904) {
            refreshAu();
@@ -520,22 +452,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 获取任务 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 获取任务 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result);
            if (result.code == 901 || result.code == 902 || result.code == 903) {
@@ -583,22 +503,8 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(
-         `\n【debug】=============== 这是 获取植物详情 请求 url ===============`
-       );
-       log(JSON.stringify(url));
-     }
- 
      $.get(url, async (error, response, data) => {
        try {
-         if (debug) {
-           log(
-             `\n\n【debug】===============这是 获取植物详情 返回data==============`
-           );
-           log(data);
-         }
- 
          let result = JSON.parse(data);
          let back = eval(result);
          if (result.code == 904) {
@@ -640,22 +546,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 开始挑战 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 开始挑战 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            if (result.code == 904) {
              refreshAu();
@@ -696,22 +590,10 @@
      )}}`,
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 上报挑战 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.post(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 上报挑战 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -746,22 +628,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 开始冒险 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 开始冒险 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            if (result.code == 904) {
              refreshAu();
@@ -796,22 +666,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 查询冒险 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 查询冒险 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            if (result.code == 904) {
              refreshAu();
@@ -861,22 +719,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 上报冒险 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 上报冒险 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -914,22 +760,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 洒阳光 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 洒阳光 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -979,20 +813,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 浇水 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(`\n\n【debug】===============这是 浇水 返回data==============`);
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -1026,24 +850,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(
-         `\n【debug】=============== 这是 查询番茄余额 请求 url ===============`
-       );
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 查询番茄余额 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -1089,22 +899,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 收取阳光 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 收取阳光 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            if (result.code == 904) {
              refreshAu();
@@ -1139,22 +937,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 收植物 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 收植物 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -1191,22 +977,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 种植物 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 种植物 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -1246,22 +1020,10 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 获取信息 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(
        url,
        async (error, response, data) => {
          try {
-           if (debug) {
-             log(
-               `\n\n【debug】===============这是 获取信息 返回data==============`
-             );
-             log(data);
-           }
- 
            let result = JSON.parse(data);
            let back = eval(result.data);
            if (result.code == 904) {
@@ -1298,18 +1060,8 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(`\n【debug】=============== 这是 互助 请求 url ===============`);
-       log(JSON.stringify(url));
-     }
- 
      $.get(url, async (error, response, data) => {
        try {
-         if (debug) {
-           log(`\n\n【debug】===============这是 互助 返回data==============`);
-           log(data);
-         }
- 
          let result = JSON.parse(data);
          if (result.data.status == 1) {
            log(`去助力[${result.data.nickName}]成功`);
@@ -1343,22 +1095,8 @@
      },
    };
    return new Promise((resolve) => {
-     if (debug) {
-       log(
-         `\n【debug】=============== 这是 互助洒阳光 请求 url ===============`
-       );
-       log(JSON.stringify(url));
-     }
- 
      $.get(url, async (error, response, data) => {
        try {
-         if (debug) {
-           log(
-             `\n\n【debug】===============这是 互助洒阳光 返回data==============`
-           );
-           log(data);
-         }
- 
          let result = JSON.parse(data);
          if (result.code == 0) {
            log(`助力洒阳光成功`);
