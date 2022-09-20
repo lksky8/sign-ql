@@ -32,7 +32,6 @@
  const notify = $.isNode() ? require("./sendNotify") : "";
  const { log } = console;
  const Notify = 1; //0为关闭通知，1为打开通知,默认为1
- const debug = 1; //0为关闭调试，1为打开调试,默认为0
  const uaNum = 21; //随机UA，从0-22随便选一个填上去
  //////////////////////
  let tyau = "";
