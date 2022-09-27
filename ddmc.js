@@ -1,6 +1,6 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 更新日期：2022-9-19
+ 日期：2022-9-27
  软件：叮咚买菜App
  功能：签到-叮咚鱼塘-叮咚果园
  抓包：http://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw?鱼塘翻牌包
@@ -112,7 +112,7 @@ let msg = '';
 			if(parseInt(pid) < 55 || parseInt(newfish) > 10){
                 for (i = 0; i < 20; i++) {
                     await feedfish();//喂鱼
-				    await $.wait(2 * 1000);
+				    await $.wait(3 * 1000);
 				    if(parseInt(fish) > 55 || parseInt(sl) < 10){
 					  log('饲料不足10g或者饲料瓶已经满了，停止喂养，可手动操作')
 					  break;
@@ -473,26 +473,31 @@ function feedfish(timeout = 3 * 1000) {
 				if (debug) {
 					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
 					log(data)
+                    sl='0'
 				}
-
-				let result = JSON.parse(data);
-				if(error || result == null){
-                    log ('Api请求失败，等待修复')
-				}else if (result.success == true && result.data.hardBoxRewardAmountAfterFeed == null) {
-					log(`喂鱼成功，剩余${result.data.feed.amount}g饲料,${result.data.seed.msg}`)
-                    fish=result.data.hardBoxRewardAmountAfterFeed
-					sl=result.data.feed.amount
-				}else if(result.success == true && result.data.hardBoxRewardAmountAfterFeed != null){
-                    log(`喂鱼成功，剩余${result.data.feed.amount}g饲料,已存储${result.data.hardBoxRewardAmountAfterFeed}g饲料,${result.data.seed.msg}`)
-                    fish=result.data.hardBoxRewardAmountAfterFeed
-					sl=result.data.feed.amount
-				} else if(result.msg == '饲料不足10g,请完成任务领饲料~'){
-					log('喂鱼失败，饲料不足10g')
-					fish='0'
-					sl='0'
+				
+				if(error){//406 Not Acceptable
+                   log ('Api请求失败，等待修复')
+				   fish='0'
+				   sl='0'
 				}else{
-					log('喂鱼任务失败，可能是cookies失效')
-                    msg += '\n喂鱼任务失败，可能是cookies失效'
+					let result = JSON.parse(data);
+				    if (result.success == true && result.data.hardBoxRewardAmountAfterFeed == null) {
+					   log(`喂鱼成功，剩余${result.data.feed.amount}g饲料,${result.data.seed.msg}`)
+                       fish=result.data.hardBoxRewardAmountAfterFeed
+					   sl=result.data.feed.amount
+				    }else if(result.success == true && result.data.hardBoxRewardAmountAfterFeed != null){
+                       log(`喂鱼成功，剩余${result.data.feed.amount}g饲料,已存储${result.data.hardBoxRewardAmountAfterFeed}g饲料,${result.data.seed.msg}`)
+                       fish=result.data.hardBoxRewardAmountAfterFeed
+					   sl=result.data.feed.amount
+				    } else if(result.msg == '饲料不足10g,请完成任务领饲料~'){
+					   log('喂鱼失败，饲料不足10g')
+					   fish='0'
+					   sl='0'
+				    }else{
+					   log('喂鱼任务失败，可能是cookies失效')
+                       msg += '\n喂鱼任务失败，可能是cookies失效'
+				    }
 				}
 
 			} catch (e) {
@@ -522,14 +527,18 @@ function water(timeout = 3 * 1000) {
 					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
 					log(data)
 				}
-
-				let result = JSON.parse(data);
-				if (result.msg == '请求成功' && result.success == true) {
-					nowater=result.data.feed.amount
-					log(`浇水成功，剩余${nowater}水滴，当前肥力:${result.data.fertilizerUse.amount},${result.data.msg}`)
-				} else {
-					log('浇水失败，可能是水滴不足或者cookies失效')
-                    msg += '\n浇水失败，可能是水滴不足或者cookies失效'
+                if(error){
+					log ('Api请求失败，等待修复')
+					nowater='0'
+				}else{
+					let result = JSON.parse(data);
+					if (result.msg == '请求成功' && result.success == true) {
+					   nowater=result.data.feed.amount
+					   log(`浇水成功，剩余${nowater}水滴，当前肥力:${result.data.fertilizerUse.amount},${result.data.msg}`)
+				    } else {
+					   log('浇水失败，可能是水滴不足或者cookies失效')
+                       msg += '\n浇水失败，可能是水滴不足或者cookies失效'
+				    }
 				}
 
 			} catch (e) {
