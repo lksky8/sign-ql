@@ -1,15 +1,15 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 日期：2022-9-27
+ 日期：2022-10-7
  软件：叮咚买菜App
  功能：签到-叮咚鱼塘-叮咚果园
- 抓包：http://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw?鱼塘翻牌包
- 抓包：http://farm.api.ddxq.mobi/api/v2/props/feed?里面的propsId和seedId分别是喂鱼和浇水的id格式如下fish代表喂鱼，water代表浇水
- 变量: ddmc='?station_id=XXXXXXXXX&city_number=XXXX&device_token=XXXXXXXXX&device_id=XXXXXXXXX&latitude=XXXXXXXXX&longitude=XXXXXXXXX&gameId=1&uid=XXXXXXXXX&DDXQSESSID=XXXXXXXXXXXXXXX&fishpropsId=2XXXXXXXXXXXXXX&fishseedId=2XXXXXXXXXXXXXXXX&waterpropsId=2XXXXXXXXXXXXXX&waterseedId=2XXXXXXXXXXXXXXXX
- 注意：station前面加?号，cookie是&DDXQSESSID=XXXXXXXXXXXXX；多个账号用 @ 或者 换行 分割
+ 抓包：打开叮咚鱼塘 → 选 “天天翻牌” → 开启抓包软件 → 返回到APP开始抽奖 →把 http://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw? 填入ddmc变量
+ 变量: ddmc='https://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw?api_version=9.7.3&app_version=1.0.0&app_client_id=3&station_id=XXXXXXXXX&city_number=XXXX&device_token=XXXXXXXXX&device_id=XXXXXXXXX&latitude=XXXXXXXXX&longitude=XXXXXXXXX&gameId=1&uid=XXXXXXXXX&DDXQSESSID=XXXXXXXXXXXXXXX
+ 注意：变量最后加上cookie DDXQSESSID= 按照格式填写100%有效；旧版不能使用需要更换新的变量；多个账号用 @ 或者 换行 分割
  定时一天3次
  鱼塘饲料瓶大于55会停止喂鱼，以免浪费
- 脚本还在测试中
+ 如果出现无法喂鱼情况在手机APP上完成滑动验证
+
  cron: 22 7,10,16 * * *
 */
 
@@ -17,7 +17,6 @@ const $ = new Env('叮咚买菜');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const {log} = console;
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
-const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 let ddmc = process.env.ddmc;
 let ddmcArr = [];
@@ -52,13 +51,9 @@ let msg = '';
 			longitude=data.longitude;
 			device_token=data.device_token;
 			device_id=data.device_id;
-			fishpropsId=data.fishpropsId
-			fishseedId=data.fishseedId
-			waterpropsId=data.waterpropsId
-			waterseedId=data.waterseedId
 			ddmck=data.DDXQSESSID;
 			header1 = JSON.parse(`{"cookie":"DDXQSESSID=${ddmck}"}`)
-			header2 = JSON.parse(`{"ddmc-game-tid":"2","cookie":"DDXQSESSID=${ddmck}"}`)
+			header2 = JSON.parse(`{"DDMC-GAME-TID":"2","cookie":"DDXQSESSID=${ddmck}"}`)
 
 			msg += `\n第${num}个账号运行结果：`
 			await checkid();
@@ -97,7 +92,7 @@ let msg = '';
 			await $.wait(1 * 1000);
 			log('【鱼塘-领饲料瓶】')
 			await $.wait(1 * 1000);
-			await rewardtask(slp,0);
+			await rewardtask(slpid,0);
 			await $.wait(1 * 1000);
 			log('【鱼塘-参与天天翻牌活动】领取奖励')
 			await $.wait(1 * 1000);
@@ -122,15 +117,9 @@ let msg = '';
 				log('饲料不足10g或者饲料瓶已经满了，停止喂养，可手动操作')
 			}
 			await $.wait(1 * 1000);
-			log('【鱼塘-去完成可能失败的任务】')
-			await $.wait(1 * 1000);
-			await rewardtask(bgs,0)
-			await $.wait(1 * 1000);
-			await rewardtask(bgs3,0)
-			await $.wait(1 * 1000);
-			await rewardtask(fpid2,0)
 			log('=============================================')
             log('开始果园任务')
+			log('=============================================')
 			await $.wait(1 * 1000);
 			log('【果园-连续签到】')
 			await $.wait(1 * 1000);
@@ -144,11 +133,10 @@ let msg = '';
 			await $.wait(1 * 1000);
 			await doachieve('LOTTERY',1);//三餐开福袋7-9 10-12 16-18
 			await $.wait(1 * 1000);
-			if(gotofish){
-				log('【去鱼塘喂食一次】领奖励')
-				await $.wait(1 * 1000);
-                await rewardtask(fishid2,1);
-			}
+			log('【去鱼塘喂食一次】领奖励')
+			await getasklist2();
+			await $.wait(1 * 1000);
+            await rewardtask(fishid2,1);
             log('【果园-浏览商品奖水滴】')
 			await $.wait(1 * 1000);
             await doachieve('BROWSE_GOODS',1)
@@ -220,38 +208,29 @@ function getasklist(timeout = 3 * 1000) {
 			headers: header1,
 		}
 
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务数据 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务数据 返回data==============`);
-					log(data)
-				}
 
 				let result = JSON.parse(data);
+				var siliaoping = data.indexOf("HARD_BOX") != -1 
 				if (result.msg == '请求成功' && result.success == true) {
-					log('获取任务数据成功')
-					pid=result.data.userTasks[6].targetRewardRangesVos[0].rewardRanges[0].amountDesc
-					if(result.data.userTasks[9].taskCode !== 'LUCK_DRAW'){
-						fpid=result.data.userTasks[10].userTaskLogId
+					log('农场-获取任务数据成功')
+					var tasklist = result.data.userTasks
+					let fp = tasklist.find(item => item['taskName']==='参与天天翻牌活动')
+                    fpid = fp['userTaskLogId']
+					if(siliaoping == true){
+						let slp = tasklist.find(item => item['taskCode']==='HARD_BOX')
+						slpid = slp['userTaskLogId']
+						pid= slp.targetRewardRangesVos[0].rewardRanges[0].amountDesc
 					}else{
-						fpid=result.data.userTasks[9].userTaskLogId
-						fpid2=result.data.userTasks[8].userTaskLogId
+						slpid = 0
+						pid = 0
 					}
-					if(result.data.userTasks[6].taskCode !== 'HARD_BOX'){
-						slp=result.data.userTasks[7].userTaskLogId
-					}else{
-						slp=result.data.userTasks[6].userTaskLogId
-					}
-					bgs=result.data.userTasks[1].userTaskLogId
-					bgs3=result.data.userTasks[2].userTaskLogId
+
+
 				} else {
 					log(`获取任务数据失败，可能是cookies失效`)
-                    msg += '\n签到失败，可能是cookies失效'
+                    msg += '\n获取任务数据失败，可能是cookies失效'
 				}
 
 			} catch (e) {
@@ -262,6 +241,36 @@ function getasklist(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
+//果园
+function getasklist2(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://farm.api.ddxq.mobi/api/v2/task/list-orchard?api_version=9.1.0&app_client_id=1&station_id=${station_id}&stationId=${station_id}&native_version=&CityId=${CityId}&OSVersion=14&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&reward=FEED&cityCode=${CityId}`,
+			headers: header2,
+		}
+
+		$.get(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if (result.msg == '请求成功' && result.success == true) {
+					log('果园-获取任务数据成功')
+					let tasklist = result.data.userTasks
+					let hesuan = tasklist.find(item => item['taskName']==='去鱼塘喂食1次')
+                    fishid2 = hesuan['userTaskLogId']
+				} else {
+					log(`获取任务数据失败，可能是cookies失效`)
+                    msg += '\n获取任务数据失败，可能是cookies失效'
+				}
+
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
 /**
  * 鱼塘任务
  */
@@ -269,26 +278,18 @@ function doachieve(taskCode,code,timeout = 3 * 1000) {
 	return new Promise((resolve) => {
         if(code == 0){
             ddmcheader=header1
+			ddmcurl = `https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng${latitude}&device_token=${device_token}&gameId=1&taskCode=${taskCode}`
 		}else{
 			ddmcheader=header2
+			ddmcurl =`https://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng${latitude}&device_token=${device_token}&taskCode=${taskCode}`
 		}
 		let url = {
-			url: `http://farm.api.ddxq.mobi/api/v2/task/achieve?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng${latitude}&device_token=${device_token}&gameId=1&taskCode=${taskCode}`,
+			url: ddmcurl,
 			headers: ddmcheader,
-		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务 请求 url ===============`);
-			log(JSON.stringify(url));
 		}
 
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务 返回data==============`);
-					log(data)
-				}
-
 				let result = JSON.parse(data);
 				if (taskCode == 'CONTINUOUS_SIGN' && code == 0 && result.success == true) {
 					log(`任务完成，获得：${result.data.rewards[0].amount}g饲料`)
@@ -318,9 +319,10 @@ function doachieve(taskCode,code,timeout = 3 * 1000) {
                     log(`任务完成，获得：${result.data.rewards[0].amount}水滴`)
 				} else if(taskCode == 'FEED_N_TIMES' && result.msg == '浇水次数不满足') {
                     log('浇水不满10次，无法完成任务')
+				} else if(result.msg == '此任务不可手动完成') {
+                    log('任务需要手动操作')
 				} else{
 					log(`获取任务数据失败，可能是cookies失效`)
-                    msg += '\n任务失败，可能是cookies失效'
 				}
 
 			} catch (e) {
@@ -337,19 +339,8 @@ function luckydarw(timeout = 3 * 1000) {
 			url: `http://farm.api.ddxq.mobi/api/v2/lucky-draw-activity/draw?api_version=9.7.3&app_version=1.0.0&app_client_id=3&station_id=${station_id}&native_version=9.58.0&city_number=${CityId}&device_token=${device_token}&device_id=${device_id}&latitude=${latitude}&longitude=${longitude}&gameId=1&uid=${uid}`,
 			headers: header1,
 		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 翻牌 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 翻牌 返回data==============`);
-					log(data)
-				}
-
 				let result = JSON.parse(data);
 				if (result.msg == '请求成功' && result.success == true) {
 					log(`已翻牌并获得：${result.data.chosen.amount}饲料`)
@@ -357,7 +348,6 @@ function luckydarw(timeout = 3 * 1000) {
 					log('饲料不足，翻牌失败')
                     msg += '\n饲料不足，翻牌失败'
 				}
-
 			} catch (e) {
 				log(e)
 			} finally {
@@ -370,29 +360,22 @@ function luckydarw(timeout = 3 * 1000) {
 function rewardtask(taskid,code,timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		if(code == 0){
-            ddmcheader=header1
+            ddmcheader1=header1
+			ddmcurl1 = `http://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=1&userTaskLogId=${taskid}`
 		}else{
-			ddmcheader=header2
+			ddmcheader1=header2
+			ddmcurl1 = `http://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&userTaskLogId=${taskid}`
 		}
 		let url = {
-			url: `http://farm.api.ddxq.mobi/api/v2/task/reward?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=1&userTaskLogId=${taskid}`,
-			headers: ddmcheader,
+			url: ddmcurl1,
+			headers: ddmcheader1,
 		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务提交 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
-					log(data)
-				}
-
 				let result = JSON.parse(data);
-				if (result.msg == '请求成功' && result.success == true) {
+				if(taskid == 0){
+					log('暂时没有饲料瓶入口')
+				}else if (result.msg == '请求成功' && result.success == true) {
 					log(`任务完成，获得：${result.data.rewards[0].amount}饲料`)
                 } else if(result.msg == '你已领取奖励，去领其他奖励吧~') {
 					log('已经领取过该奖励')
@@ -402,7 +385,6 @@ function rewardtask(taskid,code,timeout = 3 * 1000) {
 					log('任务不存在或者已完成')
 				} else {
 					log('任务失败，可能是cookies失效')
-                    msg += '\n任务失败，可能是cookies失效'
 				}
 
 			} catch (e) {
@@ -420,33 +402,16 @@ function gotofeedfish(timeout = 3 * 1000) {
 			url: `http://farm.api.ddxq.mobi/api/v2/task/receive?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&CityId=${CityId}&OSVersion=10&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=&gameId=2&taskCode=FEED_CRAP`,
 			headers: header2,
 		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务提交 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
-					log(data)
-				}
-
 				let result = JSON.parse(data);
 				if (result.msg == '请求成功' && result.success == true) {
 					log(`【去鱼塘喂食一次】领取任务成功，等待喂鱼`)
-                    fishid2=result.data.userTaskLogId
-					gotofish=true
 				} else if(result.msg == '该任务已经完成了哦'){
 					log('【去鱼塘喂食一次】任务已完成')
-					gotofish=false
 				}else{
 					log('【去鱼塘喂食一次】任务失败，可能是cookies失效')
-                    msg += '\n【去鱼塘喂食一次】任务失败，可能是cookies失效'
-					gotofish=false
 				}
-
 			} catch (e) {
 				log(e)
 			} finally {
@@ -460,24 +425,27 @@ function feedfish(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
 			url: `http://farm.api.ddxq.mobi/api/v2/props/feed?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=1&propsId=${fishpropsId}&seedId=${fishseedId}&cityCode=${CityId}&feedPro=0&triggerMultiFeed=1`,
-			headers: header1,
-		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务提交 请求 url ===============`);
-			log(JSON.stringify(url));
+			headers: { 
+                "Host": "farm.api.ddxq.mobi",
+                "user-agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/89.0.4389.72 MQQBrowser/6.2 TBS/045947 Mobile Safari/537.36 xzone/9.58.0 station_id/60dd252dbd8d8c0001eca0e0 OpenTime/"+timestampMs(),
+                "accept": "*/*",
+                "origin": "https://game.m.ddxq.mobi",
+                "x-requested-with": "com.yaya.zone",
+                "sec-fetch-site": "same-site",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-dest": "empty",
+                "referer": "https://game.m.ddxq.mobi/",
+                "accept-encoding": "gzip, deflate, br",
+                "accept-language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+                "cookie": `DDXQSESSID=${ddmck}`
+            },
 		}
 
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
-					log(data)
-                    sl='0'
-				}
-				
 				if(error){//406 Not Acceptable
-                   log ('Api请求失败，等待修复')
+                   log ('Api请求失败，请登陆APP打开购物车完成滑动验证')
+				   msg +='请登陆APP打开购物车完成滑动验证'
 				   fish='0'
 				   sl='0'
 				}else{
@@ -490,13 +458,12 @@ function feedfish(timeout = 3 * 1000) {
                        log(`喂鱼成功，剩余${result.data.feed.amount}g饲料,已存储${result.data.hardBoxRewardAmountAfterFeed}g饲料,${result.data.seed.msg}`)
                        fish=result.data.hardBoxRewardAmountAfterFeed
 					   sl=result.data.feed.amount
-				    } else if(result.msg == '饲料不足10g,请完成任务领饲料~'){
-					   log('喂鱼失败，饲料不足10g')
+				    } else if(result.msg == '饲料不足10g,请完成任务领饲料~' || result.msg == '今天喂食太多了,休息一下明天再来吧'){
+					   log('喂鱼失败，饲料不足10g或者达到喂鱼上限')
 					   fish='0'
 					   sl='0'
 				    }else{
 					   log('喂鱼任务失败，可能是cookies失效')
-                       msg += '\n喂鱼任务失败，可能是cookies失效'
 				    }
 				}
 
@@ -516,25 +483,23 @@ function water(timeout = 3 * 1000) {
 			headers: header2,
 		}
 
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务提交 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
-					log(data)
-				}
+                log(data)
                 if(error){
-					log ('Api请求失败，等待修复')
+					log ('Api请求失败，请登陆APP打开购物车完成滑动验证')
+				    msg +='请登陆APP打开购物车完成滑动验证'
 					nowater='0'
 				}else{
 					let result = JSON.parse(data);
 					if (result.msg == '请求成功' && result.success == true) {
 					   nowater=result.data.feed.amount
-					   log(`浇水成功，剩余${nowater}水滴，当前肥力:${result.data.fertilizerUse.amount},${result.data.msg}`)
+					   gyfl = result.data.fertilizerUse.amount
+					   log(`浇水成功，剩余${nowater}水滴，当前肥力:${gyfl},${result.data.msg}`)
+					   if(gyfl < 10){
+						log('肥力不足，自动施肥')
+						await userfeiliao();
+					   }
 				    } else {
 					   log('浇水失败，可能是水滴不足或者cookies失效')
                        msg += '\n浇水失败，可能是水滴不足或者cookies失效'
@@ -550,29 +515,44 @@ function water(timeout = 3 * 1000) {
 	})
 }
 
+function userfeiliao(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `https://farm.api.ddxq.mobi/api/v2/props/props-use?api_version=9.1.0&app_client_id=1&station_id=${station_id}&stationId=${station_id}&native_version=&CityId=${CityId}&OSVersion=14&uid=${uid}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&propsCode=FERTILIZER&propsId=220910108081811250&seedId=220910108081800250`,
+			headers: header2,
+		}
+		$.get(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if (result.msg == '请求成功' && result.success == true) {
+					log(`施肥成功，剩余${result.data.propsUse.amount}肥料，当前可用肥料:${result.data.propsUseResultVo.amount}`)
+				} else {
+					log('肥料不足，施肥失败')
+				}
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
 function checkwater(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
 			url: `http://farm.api.ddxq.mobi/api/v2/userguide/orchard/detail?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&CityId=${CityId}&OSVersion=10&uid=${uid}&latitude=${latitude}&longitude=${longitude}lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=2&cityCode=${CityId}`,
 			headers: header2,
 		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务提交 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
-					log(data)
-				}
-
 				let result = JSON.parse(data);
 				if (result.msg == '请求成功' && result.success == true) {
 					newater=result.data.feed.amount
+				    waterpropsId = result.data.feed.propsId
+					waterseedId = result.data.baseSeed.seedId
 					log(`目前果园水滴：${newater}`)
+
 				} else {
 					log('查询水滴数量失败，可能是cookie失效')
                     msg += '\n查询水滴数量失败，可能是cookie失效'
@@ -591,22 +571,13 @@ function checkfish(timeout = 3 * 1000) {
 			url: `http://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=1&guideCode=FISHPOND_NEW`,
 			headers: header1,
 		}
-
-		if (debug) {
-			log(`\n【debug】=============== 这是 任务提交 请求 url ===============`);
-			log(JSON.stringify(url));
-		}
-
 		$.get(url, async (error, response, data) => {
 			try {
-				if (debug) {
-					log(`\n\n【debug】===============这是 任务提交 返回data==============`);
-					log(data)
-				}
-
 				let result = JSON.parse(data);
 				if (result.msg == '请求成功' && result.success == true) {
 					newfish=result.data.feed.amount
+					fishpropsId = result.data.feed.propsId
+					fishseedId = result.data.baseSeed.seedId
 					log(`目前鱼饲料：${newfish}g`)
                     
 				} else {
@@ -702,6 +673,10 @@ function getRequest(url) {
    }  
    return theRequest;  
 }
+
+ function timestampMs(){
+    return new Date().getTime();
+ }
 
 /**
  * 修改配置文件
