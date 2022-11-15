@@ -1,7 +1,7 @@
 /**
  原作者：临渊
  修改作者：https://github.com/lksky8/sign-ql
- 日期：6-12
+ 修改日期：11-15
  小程序：统一快乐星球
  入口：活动->种番茄
  功能：互助
@@ -16,7 +16,6 @@
  6-23 更新了助力、助力洒阳光
  6-25 更新了冒险助力
  6-26 修复了冒险助力的小bug，建议更改定时两个小时一次
- 9-26 修复互助功能
 */
 
 const $ = new Env('统一茄皇互助');
@@ -128,7 +127,7 @@ let helpAdventureIdArr = [];
  */
 function refreshAu(num) {
     let url = {
-        url : `http://api.xiaoyisz.com/qiehuang/ga/public/api/login`,
+        url : `https://apig.xiaoyisz.com/qiehuang/ga/public/api/login`,
         headers : {
           "Host": "api.xiaoyisz.com",
           "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
@@ -164,7 +163,7 @@ function refreshAu(num) {
  */
 function getTask(timeout = 2*1000) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/user/task/list?'+sign(),
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/task/list?'+sign(),
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${tyau}`,
@@ -209,7 +208,7 @@ function getTask(timeout = 2*1000) {
  */
 function getPlant(num) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/plant/info?'+sign(),
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/plant/info?'+sign(),
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${tyau}`,
@@ -245,7 +244,7 @@ function getPlant(num) {
  */
 function getTomato(timeout = 2*1000) {
     let url = {
-        url : 'http://api.xiaoyisz.com/qiehuang/ga/user/info?'+sign(),
+        url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/info?'+sign(),
         headers : {
             "Host": "api.xiaoyisz.com",
             "authorization": `${tyau}`,
@@ -285,7 +284,7 @@ function getTomato(timeout = 2*1000) {
  */
 function getUserInfo(timeout = 2*1000) {
     let url = {
-      url : `http://api.xiaoyisz.com/qiehuang/ga/user/info?`+sign(),
+      url : `https://apig.xiaoyisz.com/qiehuang/ga/user/info?`+sign(),
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${tyau}`,
@@ -319,7 +318,7 @@ function getUserInfo(timeout = 2*1000) {
  */
 function doHelp(num1,num2) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/user/task/report?'+sign()+`&taskType=${taskTypeArr[0]}&attachId=${idArr[num2]}&taskId=${helpTaskIdArr[num1]}`,
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/task/report?'+sign()+`&taskType=${taskTypeArr[0]}&attachId=${idArr[num2]}&taskId=${helpTaskIdArr[num1]}`,
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${newAuArr[num1]}`,
@@ -398,7 +397,7 @@ function doHelpGiveSunshine(num1,num2) {
  */
 function doHelpAdventure(num1,num2) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/user/adventure/help?'+sign()+`&adventureId=${helpAdventureIdArr[num2]}`,
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/help?'+sign()+`&adventureId=${helpAdventureIdArr[num2]}`,
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${newAuArr[num1]}`,
@@ -436,7 +435,7 @@ function doHelpAdventure(num1,num2) {
  */
 function queryAdventure(timeout = 2*1000) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/user/adventure/info?'+sign()+'&userId=-1&type=2',
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/info?'+sign()+'&userId=-1&type=2',
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${tyau}`,
@@ -483,7 +482,7 @@ function queryAdventure(timeout = 2*1000) {
  */
 function reportAdventure(timeout = 2*1000) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/user/adventure/drawPrize?'+sign()+`&adventureId=${adventureId}`,
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/drawPrize?'+sign()+`&adventureId=${adventureId}`,
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${tyau}`,
@@ -529,7 +528,7 @@ function reportAdventure(timeout = 2*1000) {
  */
 function startAdventure(num) {
     let url = {
-      url : 'http://api.xiaoyisz.com/qiehuang/ga/user/adventure/start?'+sign(),
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/start?'+sign(),
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${newAuArr[num]}`,
