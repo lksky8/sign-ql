@@ -445,7 +445,7 @@ function feedfish(timeout = 3 * 1000) {
 			try {
 				if(error){//406 Not Acceptable
                    log ('Api请求失败，请登陆APP打开购物车完成滑动验证')
-				   msg +='请登陆APP打开购物车完成滑动验证'
+				   msg +='\n请登陆APP打开购物车完成滑动验证'
 				   fish='0'
 				   sl='0'
 				}else{
@@ -485,10 +485,10 @@ function water(timeout = 3 * 1000) {
 
 		$.get(url, async (error, response, data) => {
 			try {
-                log(data)
+                //log(data)
                 if(error){
 					log ('Api请求失败，请登陆APP打开购物车完成滑动验证')
-				    msg +='请登陆APP打开购物车完成滑动验证'
+				    msg +='\n请登陆APP打开购物车完成滑动验证'
 					nowater='0'
 				}else{
 					let result = JSON.parse(data);
