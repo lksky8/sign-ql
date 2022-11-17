@@ -9,6 +9,7 @@
  定时一天3次
  鱼塘饲料瓶大于55会停止喂鱼，以免浪费
  如果出现无法喂鱼情况在手机APP上完成滑动验证
+ <<<<<<完成会获得满49元使用的香蕉券，满59元使用的水产券>>>>>>
 
  cron: 22 7,10,16 * * *
 */
@@ -52,8 +53,8 @@ let msg = '';
 			device_token=data.device_token;
 			device_id=data.device_id;
 			ddmck=data.DDXQSESSID;
-			header1 = JSON.parse(`{"cookie":"DDXQSESSID=${ddmck}"}`)
-			header2 = JSON.parse(`{"DDMC-GAME-TID":"2","cookie":"DDXQSESSID=${ddmck}"}`)
+			header1 = JSON.parse(`{"Accept":"*/*","Accept-Encoding":"gzip, deflate, br","Host":"farm.api.ddxq.mobi","Connection":"keep-alive","Accept-Language":"zh-cn","Origin":"https://game.m.ddxq.mobi","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.61.1 station_id/${station_id} device_id/${device_id}","cookie":"DDXQSESSID=${ddmck}"}`)
+			header2 = JSON.parse(`{"Accept":"*/*","Accept-Encoding":"gzip, deflate, br","Host":"farm.api.ddxq.mobi","Connection":"keep-alive","Accept-Language":"zh-cn","Origin":"https://game.m.ddxq.mobi","User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 xzone/9.61.1 station_id/${station_id} device_id/${device_id}","DDMC-GAME-TID":2,"cookie":"DDXQSESSID=${ddmck}"}`)
 
 			msg += `\n第${num}个账号运行结果：`
 			await checkid();
@@ -104,19 +105,24 @@ let msg = '';
 			await $.wait(1 * 1000);
 			await checkfish();
 			await $.wait(2 * 1000);
-			if(parseInt(pid) < 55 || parseInt(newfish) > 10){
+			log('开始喂鱼')
+            if(nofish == 1){
+			    log('!!!鱼塘没有鱼了!!!')
+			}else if(parseInt(pid) < 55 || parseInt(newfish) > 10 ){
                 for (i = 0; i < 20; i++) {
                     await feedfish();//喂鱼
 				    await $.wait(3 * 1000);
-				    if(parseInt(fish) > 55 || parseInt(sl) < 10){
-					  log('饲料不足10g或者饲料瓶已经满了，停止喂养，可手动操作')
+				    if(parseInt(fish) > 55 || parseInt(sl) < 10 || nofish == 1){
+					  log('无法喂养，可能饲料不足10g或者饲料瓶已经满了或者没有鱼')
 					  break;
 				    }
                 }
 			}else{
-				log('饲料不足10g或者饲料瓶已经满了，停止喂养，可手动操作')
+				log('无法喂养，可能饲料不足10g或者饲料瓶已经满了或者没有鱼')
 			}
 			await $.wait(1 * 1000);
+			await checkfish2();
+			await $.wait(1 * 3000);
 			log('=============================================')
             log('开始果园任务')
 			log('=============================================')
@@ -143,7 +149,9 @@ let msg = '';
 			await $.wait(1 * 1000);
 			await checkwater();
 			await $.wait(2 * 1000);
-			if(parseInt(newater) > 10){
+			if(nobanana == 1){
+			    log('!!!农场没有树了!!!')
+			}else if(parseInt(newater) > 10){
                 for (i = 0; i < 10; i++) {
                     await water();//浇水
 				    await $.wait(2 * 1000);
@@ -159,6 +167,9 @@ let msg = '';
 			log('领取【浇水10次送水滴】奖励')
 			await $.wait(1 * 1000);
 			await doachieve('FEED_N_TIMES',1)
+			await $.wait(2 * 1000);
+			await checkwater2();
+			await $.wait(2 * 1000);
 
 		}
 		await SendMsg(msg);
@@ -176,7 +187,9 @@ function doSign(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
 			url: `http://sunquan.api.ddxq.mobi/api/v2/user/signin/`,
-			headers: header1,
+			headers: { 
+                "cookie":`DDXQSESSID=${ddmck}`
+            },
 			body: `api_version=9.7.3&app_version=1.0.0&app_client_id=3&station_id=${station_id}&native_version=9.35.1&city_number=${CityId}&latitude=${latitude}&longitude=${longitude}`,
 		}
 
@@ -185,7 +198,7 @@ function doSign(timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.msg == '请求成功' && result.success == true) {
 					log(`签到成功，获得：${result.data.point}积分，已经签到了${result.data.sign_series}天`)
-					msg += `\n签到成功，获得：${result.data.point}积分，已经签到了${result.data.sign_series}天`
+					//msg += `\n签到成功，获得：${result.data.point}积分，已经签到了${result.data.sign_series}天`
 				} else {
 					log(`签到失败，原因是：${result.message}`)
 					msg += '\n签到失败，可能是cookies失效'
@@ -210,7 +223,6 @@ function getasklist(timeout = 3 * 1000) {
 
 		$.get(url, async (error, response, data) => {
 			try {
-
 				let result = JSON.parse(data);
 				var siliaoping = data.indexOf("HARD_BOX") != -1 
 				if (result.msg == '请求成功' && result.success == true) {
@@ -444,8 +456,8 @@ function feedfish(timeout = 3 * 1000) {
 		$.get(url, async (error, response, data) => {
 			try {
 				if(error){//406 Not Acceptable
-                   log ('Api请求失败，请登陆APP打开购物车完成滑动验证')
-				   msg +='\n请登陆APP打开购物车完成滑动验证'
+                   log ('Api请求失败，请登陆APP完成滑动验证')
+				   msg +='\n请登陆APP完成滑动验证完成喂鱼操作'
 				   fish='0'
 				   sl='0'
 				}else{
@@ -485,10 +497,9 @@ function water(timeout = 3 * 1000) {
 
 		$.get(url, async (error, response, data) => {
 			try {
-                //log(data)
                 if(error){
-					log ('Api请求失败，请登陆APP打开购物车完成滑动验证')
-				    msg +='\n请登陆APP打开购物车完成滑动验证'
+					log ('Api请求失败，请登陆APP完成滑动验证')
+				    msg +='\n请登陆APP完成滑动验证'
 					nowater='0'
 				}else{
 					let result = JSON.parse(data);
@@ -547,15 +558,19 @@ function checkwater(timeout = 3 * 1000) {
 		$.get(url, async (error, response, data) => {
 			try {
 				let result = JSON.parse(data);
-				if (result.msg == '请求成功' && result.success == true) {
+				if(data.indexOf("seedId")<0){
+					nobanana = 1
+					newater=result.data.feed.amount
+					waterpropsId = result.data.feed.propsId
+					waterseedId = 0
+					log('农场没有香蕉可以种，检查是否已经获得奖励')
+					msg +='\n农场没有香蕉可以种，检查是否已经获得奖励'
+				}else if (result.msg == '请求成功' && result.success == true) {
+					nobanana = 0
 					newater=result.data.feed.amount
 				    waterpropsId = result.data.feed.propsId
 					waterseedId = result.data.baseSeed.seedId
 					log(`目前果园水滴：${newater}`)
-
-				} else {
-					log('查询水滴数量失败，可能是cookie失效')
-                    msg += '\n查询水滴数量失败，可能是cookie失效'
 				}
 			} catch (e) {
 				log(e)
@@ -565,24 +580,79 @@ function checkwater(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
+
+function checkwater2(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `http://farm.api.ddxq.mobi/api/v2/userguide/orchard/detail?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&CityId=${CityId}&OSVersion=10&uid=${uid}&latitude=${latitude}&longitude=${longitude}lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=2&cityCode=${CityId}`,
+			headers: header2,
+		}
+		$.get(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if(data.indexOf("seedId")<0){
+					log('农场没有香蕉可以种，检查是否已经获得奖励')
+				}else if (result.msg == '请求成功' && result.success == true) {
+					msg+= `\n【果园】${result.data.baseSeed.msg}`
+				}
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
 function checkfish(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		let url = {
 			url: `http://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=1&guideCode=FISHPOND_NEW`,
 			headers: header1,
 		}
+		
 		$.get(url, async (error, response, data) => {
 			try {
 				let result = JSON.parse(data);
-				if (result.msg == '请求成功' && result.success == true) {
+				if(data.indexOf("seedId")<0){
+					nofish = 1
+					newfish=result.data.feed.amount
+					fishpropsId = result.data.feed.propsId
+					fishseedId = 0
+					fish = 0
+					log('鱼塘没有鱼可以喂，检查是否已经获得奖励')
+					msg +='\n鱼塘没有鱼可以喂，检查是否已经获得奖励'
+				}else if (result.msg == '请求成功' && result.success == true) {
+					nofish = 0
 					newfish=result.data.feed.amount
 					fishpropsId = result.data.feed.propsId
 					fishseedId = result.data.baseSeed.seedId
 					log(`目前鱼饲料：${newfish}g`)
-                    
-				} else {
-					log('查询鱼饲料数量失败，可能是cookie失效')
-                    msg += '\n查询鱼饲料数量失败，可能是cookie失效'
+				}
+
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+function checkfish2(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		let url = {
+			url: `http://farm.api.ddxq.mobi/api/v2/userguide/detail?api_version=9.1.0&app_client_id=2&station_id=${station_id}&stationId=${station_id}&native_version=&app_version=9.58.0&OSVersion=10&CityId=${CityId}&latitude=${latitude}&longitude=${longitude}&lat=${latitude}&lng=${longitude}&device_token=${device_token}&gameId=1&guideCode=FISHPOND_NEW`,
+			headers: header1,
+		}
+		
+		$.get(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if(data.indexOf("seedId")<0){
+					log('鱼塘没有鱼可以喂，检查是否已经获得奖励')
+				}else if (result.msg == '请求成功' && result.success == true) {
+					msg+= `\n【鱼塘】${result.data.baseSeed.msg}`
 				}
 
 			} catch (e) {
