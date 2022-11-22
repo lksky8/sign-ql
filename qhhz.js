@@ -4,7 +4,7 @@
  小程序：统一快乐星球
  入口：活动->种番茄
  功能：互助
- 抓包：api.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
+ 抓包：https://apig.xiaoyisz.com/qiehuang/ga/public/api/login  这个登录包里 body 部分的 全部
  变量：tyhz='body@xxxx '  多个账号用 @ 或者 换行 分割
  定时两个小时一次
  cron: 5 0/2 * * *
@@ -359,7 +359,7 @@ function doHelp(num1,num2) {
  */
 function doHelpGiveSunshine(num1,num2) {
     let url = {
-      url : 'https://api.xiaoyisz.com/qiehuang/ga/plant/giveSunshine?'+sign()+`&plantId=${plantIdArr[num2]}`,
+      url : 'https://apig.xiaoyisz.com/qiehuang/ga/plant/giveSunshine?'+sign()+`&plantId=${plantIdArr[num2]}`,
       headers : {
         "Host": "api.xiaoyisz.com",
         "authorization": `${newAuArr[num1]}`,
