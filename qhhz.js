@@ -128,7 +128,7 @@ function refreshAu(num) {
     let url = {
         url : `https://apig.xiaoyisz.com/qiehuang/ga/public/api/login`,
         headers : {
-          "Host": "api.xiaoyisz.com",
+          "Host": "apig.xiaoyisz.com",
           "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
           "Content-Type": "application/json"
         },
@@ -164,7 +164,7 @@ function getTask(timeout = 2*1000) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/task/list?'+sign(),
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${tyau}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"
@@ -209,7 +209,7 @@ function getPlant(num) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/plant/info?'+sign(),
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${tyau}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"
@@ -245,7 +245,7 @@ function getTomato(timeout = 2*1000) {
     let url = {
         url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/info?'+sign(),
         headers : {
-            "Host": "api.xiaoyisz.com",
+            "Host": "apig.xiaoyisz.com",
             "authorization": `${tyau}`,
             "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
             "Content-Type": "application/json"
@@ -285,7 +285,7 @@ function getUserInfo(timeout = 2*1000) {
     let url = {
       url : `https://apig.xiaoyisz.com/qiehuang/ga/user/info?`+sign(),
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${tyau}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "Content-Type": "application/json",
@@ -319,7 +319,7 @@ function doHelp(num1,num2) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/task/report?'+sign()+`&taskType=${taskTypeArr[0]}&attachId=${idArr[num2]}&taskId=${helpTaskIdArr[num1]}`,
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${newAuArr[num1]}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"
@@ -361,7 +361,7 @@ function doHelpGiveSunshine(num1,num2) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/plant/giveSunshine?'+sign()+`&plantId=${plantIdArr[num2]}`,
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${newAuArr[num1]}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"
@@ -398,7 +398,7 @@ function doHelpAdventure(num1,num2) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/help?'+sign()+`&adventureId=${helpAdventureIdArr[num2]}`,
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${newAuArr[num1]}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"
@@ -436,7 +436,7 @@ function queryAdventure(timeout = 2*1000) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/info?'+sign()+'&userId=-1&type=2',
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${tyau}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"
@@ -483,7 +483,7 @@ function reportAdventure(timeout = 2*1000) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/drawPrize?'+sign()+`&adventureId=${adventureId}`,
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${tyau}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "Content-Type": "application/json",
@@ -529,7 +529,7 @@ function startAdventure(num) {
     let url = {
       url : 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/start?'+sign(),
       headers : {
-        "Host": "api.xiaoyisz.com",
+        "Host": "apig.xiaoyisz.com",
         "authorization": `${newAuArr[num]}`,
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.28(0x18001c29) NetType/WIFI",
         "content-type": "application/json"

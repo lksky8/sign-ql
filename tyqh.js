@@ -188,7 +188,7 @@
    let url = {
      url: `https://apig.xiaoyisz.com/qiehuang/ga/public/api/login`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
      },
@@ -230,7 +230,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/friend/list?'+sign()+`&page=1&size=50`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
@@ -300,7 +300,7 @@
        url:
          'https://apig.xiaoyisz.com/qiehuang/ga/user/daily/steal?'+sign()+'&friendUserId='+userId,
        headers: {
-         Host: "api.xiaoyisz.com",
+         Host: "apig.xiaoyisz.com",
          authorization: `${tyau}`,
          "user-agent": `${ua}`,
          "Content-Type": "application/json",
@@ -342,7 +342,7 @@
    let url = {
      url: `https://apig.xiaoyisz.com/qiehuang/ga/user/task/report?`+sign()+`&taskType=${taskTypeArr[num]}&attachId=${timestampMs()}&taskId=${taskIdArr[num]}`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -382,7 +382,7 @@
    let url = {
      url: `https://apig.xiaoyisz.com/qiehuang/ga/user/task/drawPrize?`+sign()+`&taskId=${taskIdArr[num]}`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -423,7 +423,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/task/list?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -474,7 +474,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/plant/info?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -517,7 +517,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/challenge/start?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -557,7 +557,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/challenge/report?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
@@ -599,7 +599,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/start?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -637,7 +637,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/info?'+sign()+'&userId=-1&type=2',
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -690,7 +690,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/adventure/drawPrize?'+sign()+`&adventureId=${adventureId}`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
@@ -731,7 +731,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/plant/batchgiveSunshine?'+sign()+`&plantId=${tyPlantId}`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -784,7 +784,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/plant/upgrade?'+sign()+`&plantId=${tyPlantId}`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -821,7 +821,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/info?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
@@ -870,7 +870,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/user/daily/pickup?'+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "content-type": "application/json",
@@ -908,7 +908,7 @@
    let url = {
      url: 'https://apig.xiaoyisz.com/qiehuang/ga/plant/harvest?'+sign()+`&plantId=${tyPlantId}`,
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
@@ -948,7 +948,7 @@
    let url = {
      url: `https://apig.xiaoyisz.com/qiehuang/ga/plant/start?`+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
@@ -991,7 +991,7 @@
    let url = {
      url: `https://apig.xiaoyisz.com/qiehuang/ga/user/info?`+sign(),
      headers: {
-       Host: "api.xiaoyisz.com",
+       Host: "apig.xiaoyisz.com",
        authorization: `${tyau}`,
        "user-agent": `${ua}`,
        "Content-Type": "application/json",
