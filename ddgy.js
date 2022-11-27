@@ -13,8 +13,8 @@
 const $ = new Env('滴滴果园');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const {log} = console;
-const Notify = 0; //0为关闭通知，1为打开通知,默认为1
-const taskarra = [255,41,62,261]
+const Notify = 1; //0为关闭通知，1为打开通知,默认为1
+const taskarra = [72,41,62,261]
 const fdarra = [251,252,253]
 
 //////////////////////
@@ -48,7 +48,7 @@ const header = JSON.parse(`{"User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 B
 			log('开始签到');
 			await doSign();
 			await checkwater();
-			await getask()
+			await getask();
 			await $.wait(2 * 1000);
 			log('开始任务')
 			for (let i = 0; i < taskarra.length; i++) {
@@ -62,6 +62,12 @@ const header = JSON.parse(`{"User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 B
                 await award(fdarra[i])
 				await $.wait(2 * 1000);
             }
+			log('做【从福利中心浏览滴滴果园】任务')
+			await accept(255);
+			await $.wait(3 * 1000);
+			await doflzx();
+			await $.wait(3 * 1000);
+			await award(255);
 			log('做【看附近核酸检测点】任务')
 			await accept(68);
 			await $.wait(3 * 1000);
@@ -84,6 +90,19 @@ const header = JSON.parse(`{"User-Agent":"Mozilla/5.0 (Linux; Android 10; MI 8 B
 			await $.wait(2 * 1000);
 			await checkwater();
 			await $.wait(2 * 1000);
+			await collectwater();
+			await $.wait(2 * 1000);
+			if(jscs >= 200){
+				log('浇水达到200g获取1袋肥料')
+				await award(100)
+				await $.wait(2 * 1000);
+			}else if(jscs >= 500){
+				log('浇水达到500g获取2袋肥料')
+				await award(101)
+				await $.wait(2 * 1000);
+			}else{
+				log('浇水次数不足无法领取200g/500g奖励')
+			}
 			if(parseInt(sl) > 10){
 				for (i = 0; i < 10; i++) {
                     await water();//浇水
@@ -137,7 +156,7 @@ function doSign(timeout = 3 * 1000) {
 					msg += `\n签到成功，今天是第${result.data['sign_times']}天签到，获得：${result.data.rewards[0].name}`
 				} else if (result.errmsg == '您今天已经签过到啦') {
 					log(`签到失败，今日已签到`)
-					msg += `\n签到失败，今日已签到`
+					//msg += `\n签到失败，今日已签到`
 				} else {
 					log(`签到失败，原因是：${result}`)
 					msg += `\n签到失败，原因是：${result}`
@@ -166,6 +185,9 @@ function getask(timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.errmsg == 'success') {
 					log('任务获取成功')
+					let tasklist = result.data.missions
+					let b = tasklist.find(item => item['title']==='每日浇水200g')
+					jscs = b['progress']
 				} else {
 					log(`任务获取失败，原因是：${result}`)
 				}
@@ -454,6 +476,55 @@ function dozxk(timeout = 3 * 1000) {
 	})
 }
 
+/**
+ * 福利中心浏览果园
+ */
+function doflzx(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		var postbody = { 
+                "xbiz": "240000",
+                "prod_key": "welfare-center",
+                "xpsid": "",
+                "dchn": "DpQ3dga",
+                "xoid": "",
+                "xenv": "passenger",
+                "xspm_from": "",
+                "xpsid_root": "",
+                "xpsid_from": "",
+                "xpsid_share": "",
+	            "token": `${token}`,
+				"lat": "11",
+	            "lng": "111",
+	            "platform": "na",
+				"env": `{\"cityId\":\"${cityId}\",\"token\":\"${token}\",\"longitude\":\"111\",\"latitude\":\"11\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"f44f15a79a26400afa9f49e44987c310\",\"ddfp\":\"f44f15a79a26400afa9f49e44987c310\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}`,
+	            "type": "navigation_click",
+	            "data": {
+		            "navigation_type": "didi_garden"
+	            }
+            }
+		let url = {
+			url: 'https://ut.xiaojukeji.com/ut/kappa/api/owner/vip/index',
+			headers: header,
+			body: JSON.stringify(postbody),
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if (result.errmsg == 'success') {
+                    log('【从福利中心浏览滴滴果园】任务成功')
+				} else {
+					log(`任务失败，原因是：${data}`)
+					msg += '\n任务失败'
+				}
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
 function dozb(timeout = 3 * 1000) {
 	return new Promise((resolve) => {
 		var postbody = { 
@@ -511,11 +582,55 @@ function dozb(timeout = 3 * 1000) {
 			try {
 				let result = JSON.parse(data);
 				if (result.errmsg == 'ok') {
-                    log('【查看附近核酸检测点】任务浏览成功')
+                    log('【浏览周边好去处】任务浏览成功')
 				} else {
 					log(`任务失败，原因是：${data}`)
 					msg += '\n任务失败'
 				}
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+/**
+ * 查询水果是否成熟
+ */
+function checkFruits(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		var postbody = { 
+                "xbiz": "240301",
+                "prod_key": "didi-orchard",
+                "xpsid": "",
+                "dchn": "O9aM923",
+                "xoid": "",
+                "uid": "",
+                "xenv": "passenger",
+                "xspm_from": "",
+                "xpsid_root": "",
+                "xpsid_from": "",
+                "xpsid_share": "",
+                "platform": 1,
+				"token": `${token}`
+            }
+		let url = {
+			url: 'https://game.xiaojukeji.com/api/game/plant/myFruits',
+			headers: header,
+			body: JSON.stringify(postbody),
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if (result.data['my_fruits'] == null) {
+					log('水果还没成熟')
+				} else {
+					log(`浇水失败，原因是：${data}`)
+					msg += `\n浇水失败`
+				}
+
 			} catch (e) {
 				log(e)
 			} finally {
@@ -558,6 +673,11 @@ function water(timeout = 3 * 1000) {
 				if (result.errmsg == 'success') {
 					let w=100 - parseInt(result.data['tree_progress'])
 					nowater=result.data['pack_water']
+					if(result.data['pack_fer'] > 0){
+						log('有肥料可用，自动使用')
+						await yjsf();
+						await $.wait(2 * 1000);
+					}
 					log(`浇水成功，水滴剩余${nowater}g，差${result.data['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`)
 				} else if (result.errmsg == '水滴不足') {
 					log('浇水失败，水滴不足')
@@ -575,6 +695,95 @@ function water(timeout = 3 * 1000) {
 		}, timeout)
 	})
 }
+
+/**
+ * 一键施肥
+ */
+function yjsf(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		var postbody = { 
+                "xbiz": "240301",
+                "prod_key": "didi-orchard",
+                "xpsid": "",
+                "dchn": "O9aM923",
+                "xoid": "",
+                "uid": "",
+                "xenv": "passenger",
+                "xspm_from": "",
+                "xpsid_root": "",
+                "xpsid_from": "",
+                "xpsid_share": "",
+				"count": 1,
+	            "quick": true,
+	            "platform": 1,
+				"token": `${token}`
+            }
+		let url = {
+			url: 'https://game.xiaojukeji.com/api/game/plant/fertilizer',
+			headers: header,
+			body: JSON.stringify(postbody),
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if (result.errmsg == 'success') {
+					log(`施肥成功，目前肥力：${result.data['tree_nutrient']}，剩余饲料${result.data['pack_fer']}袋可用`)
+				} else {
+					log(`施肥失败，原因是：${data}`)
+				}
+
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
+/**
+ * 收集水滴
+ */
+function collectwater(timeout = 3 * 1000) {
+	return new Promise((resolve) => {
+		var postbody = { 
+                "xbiz": "240301",
+                "prod_key": "didi-orchard",
+                "xpsid": "",
+                "dchn": "O9aM923",
+                "xoid": "",
+                "uid": "",
+                "xenv": "passenger",
+                "xspm_from": "",
+                "xpsid_root": "",
+                "xpsid_from": "",
+                "xpsid_share": "",
+	            "platform": 1,
+				"token": `${token}`
+            }
+		let url = {
+			url: 'https://game.xiaojukeji.com/api/game/plant/recBucketWater',
+			headers: header,
+			body: JSON.stringify(postbody),
+		}
+		$.post(url, async (error, response, data) => {
+			try {
+				let result = JSON.parse(data);
+				if (result.errmsg == 'success') {
+					log(`水滴收集成功，获得：${result.data['rec_water']}g`)
+				} else {
+					log(`水滴收集失败，原因是：${data}`)
+				}
+
+			} catch (e) {
+				log(e)
+			} finally {
+				resolve();
+			}
+		}, timeout)
+	})
+}
+
 /**
  * 查水
  */
@@ -610,13 +819,14 @@ function checkwater(timeout = 3 * 1000) {
 					let w=100 - parseInt(result.data['tree_info']['tree_progress'])
 					sl=result.data['tree_info']['pack_water']
 					box = result.data['tree_info']['available_box']
+					fl = result.data['tree_info']['tree_nutrient']
 					if(box){
 						await recCommonBox();
 					}
-					log(`获取数据成功，水滴剩余${sl}g，差${result.data['tree_info']['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`)
+					log(`水滴剩余${sl}g，肥料：${fl}，差${result.data['tree_info']['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`)
 				} else {
-					log(`签到失败，原因是：${data}`)
-					msg += `\n签到失败，原因是：${data}`
+					log(`数据获取失败，原因是：${data}`)
+					msg += `\n数据获取失败，原因是：${data}`
 				}
 			} catch (e) {
 				log(e)
@@ -660,8 +870,8 @@ function info(timeout = 3 * 1000) {
 				let result = JSON.parse(data);
 				if (result.errmsg == 'success') {
 					let w=100 - parseInt(result.data['tree_info']['tree_progress'])
-					log(`获取数据成功，水滴剩余${result.data['tree_info']['pack_water']}g，差${result.data['tree_info']['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`);
-					msg += `\n获取数据成功，水滴剩余${result.data['tree_info']['pack_water']}g，差${result.data['tree_info']['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`
+					log(`果树水滴剩余${result.data['tree_info']['pack_water']}g，肥料：${result.data['tree_info']['tree_nutrient']}，差${result.data['tree_info']['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`);
+					msg += `\n果树水滴剩余${result.data['tree_info']['pack_water']}g，肥料：${result.data['tree_info']['tree_nutrient']}，差${result.data['tree_info']['next_box_progress']}开宝箱，再浇水${w}%就升级到下一级`
 				} else {
 					log(`数据获取失败，原因是：${data}`)
 					msg += `\n数据获取失败，原因是：${data}`
