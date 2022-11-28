@@ -503,7 +503,7 @@ function doflzx(timeout = 3 * 1000) {
 	            }
             }
 		let url = {
-			url: 'https://ut.xiaojukeji.com/ut/kappa/api/owner/vip/index',
+			url: 'https://ut.xiaojukeji.com/ut/welfare/api/action/event/report',
 			headers: header,
 			body: JSON.stringify(postbody),
 		}
