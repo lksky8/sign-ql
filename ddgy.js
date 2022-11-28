@@ -496,7 +496,7 @@ function doflzx(timeout = 3 * 1000) {
 				"lat": "11",
 	            "lng": "111",
 	            "platform": "na",
-				"env": `{\"cityId\":\"${cityId}\",\"token\":\"${token}\",\"longitude\":\"111\",\"latitude\":\"11\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"f44f15a79a26400afa9f49e44987c310\",\"ddfp\":\"f44f15a79a26400afa9f49e44987c310\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}`,
+				"env": `{\"cityId\":\"11\",\"token\":\"${token}\",\"longitude\":\"111\",\"latitude\":\"11\",\"appid\":\"30004\",\"fromChannel\":\"1\",\"deviceId\":\"f44f15a79a26400afa9f49e44987c310\",\"ddfp\":\"f44f15a79a26400afa9f49e44987c310\",\"appVersion\":\"6.2.4\",\"userAgent\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 didi.passenger/6.2.4 FusionKit/1.2.20 BottomBar/on OffMode/0\"}`,
 	            "type": "navigation_click",
 	            "data": {
 		            "navigation_type": "didi_garden"
