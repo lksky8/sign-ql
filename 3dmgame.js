@@ -1,6 +1,6 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 日期：2022-7-24
+ 日期：2023-2-22
  网站：3dmgame论坛签到
  功能：签到、抽奖，金币可换现金买游戏
  变量：bbs3dmck='cookie'  多个账号用换行分割 
@@ -10,8 +10,6 @@
  【3DM网游加速器助你畅玩国外内多款热门游戏！】任务=96;【3DM论坛网游加速器】帖子=tid:6272167;fid:3469;
  【永久免费】《风灵月影》修改器工具=126;【风灵月影修改器大全】帖子=tid:6274349;fid:3217;
  玩家用户组【论坛常客】=70 【论坛达人】=71 【论坛居民】=72  【游戏之神】=73
- 特殊任务：
- 一周一次--------MOD站福利【需完成连锁前置任务后才可领取】=128；【3DM MOD站欢迎您】帖子=tid:5751666;fid:2661
  cron: 0 8,13,20 * * *
  */
 
@@ -49,7 +47,15 @@ let msg = '';
 			await checkgold();
 			log('开始做论坛任务');
             //开始
-			log('做 【3DM论坛 每日打卡】任务')
+			log('做 《3DM论坛新用户注册手册-简易新手攻略》 任务')
+            await dotask('apply',127);
+			for (i = 0; i < 3; i++) {
+                await reply(6354844,406);
+                await $.wait(35 * 1000);
+			}
+            await dotask('draw',127);
+			//
+			log('做 《3DM论坛发帖规则！》 任务')
 			await dotask('apply',68); //apply=接受任务，draw=完成任务
 			for (i = 0; i < 3; i++) {
                 await reply(6272162,3357);
@@ -57,7 +63,7 @@ let msg = '';
             }
             await dotask('draw',68);
             //结束
-	        log('做【3DM论坛 国产单机游戏爱好者】任务')
+	        log('做 《招募版主前置专贴，欢迎加入3DM论坛版主团队》 任务')
 			await dotask('apply',110); 
 			for (i = 0; i < 3; i++) {
                 await reply(6272166,3340);
@@ -65,7 +71,7 @@ let msg = '';
             }
             await dotask('draw',110);
             //
-			log('做 【3DM网游加速器助你畅玩国外内多款热门游戏！】任务')
+			log('做 《3DM论坛获取相关用户组前置任务专帖》 任务')
             await dotask('apply',96); 
             for (i = 0; i < 3; i++) {
                 await reply(6272167,3469);
@@ -73,27 +79,27 @@ let msg = '';
             }
             await dotask('draw',96);
             //
-			log('做 【永久免费】《风灵月影》修改器工具 任务')
+			log('做 《今日话题区 - 话题征集贴 - 欢迎各位坛友贡献您的话题》 任务')
             await dotask('apply',126); 
 			for (i = 0; i < 3; i++) {
-                await reply(6274349,3217);
+                await reply(6274349,256);
                 await $.wait(35 * 1000);
             }
             await dotask('draw',126);
-            //
+			//
 			if(njifen > 249 && njifen <= 1999 ){
 				
 				log('做 玩家用户组【论坛常客】 任务') //会按等级升级的【论坛常客】=70 【论坛达人】=71 【论坛居民】=72  【游戏之神】=73
                 await dotask('apply',70); 
                 await $.wait(2 * 1000);
 
-			} else if(njifen > 1999 && njifen <= 8999){
+			} else if(njifen > 1999 && njifen <= 18000){
 
                 log('做 玩家用户组【论坛达人】 任务') 
                 await dotask('apply',71); 
                 await $.wait(2 * 1000);
 
-			} else if(njifen > 17999 && njifen <= 64999){
+			} else if(njifen > 18000 && njifen <= 64999){
 
 				log('做 玩家用户组【论坛居民】 任务') 
                 await dotask('apply',72); 
@@ -109,13 +115,6 @@ let msg = '';
 				log('等级不足，等积分大于250再领取任务')
 			}
 
-            log('每日任务完成,尝试做一周的特殊任务')
-            //
-            await dotask('apply',128); 
-            await $.wait(1 * 1000);
-            await reply(5751666,2661);
-            await $.wait(1 * 1000);
-            await dotask('draw',128);
             msg += `\n3dmgame论坛任务操作完成，建议每日3次以防万一`
             await checkgold();
 		}
