@@ -90,7 +90,7 @@ function doSign(timeout = 3 * 1000) {
 				} else {
 
 					log('登录失败:CK无效，请重新获取')
-					await notify.sendNotify(`${$.name}`, '登录失败:CK无效，请重新获取');
+					await notify.sendNotify('游侠网宝箱', '登录失败:CK无效，请重新获取');
 
 
 				}
