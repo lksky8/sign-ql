@@ -1,17 +1,15 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 日期：2023-2-22
+ 日期：2024-12-24
  网站：3dmgame论坛签到
  功能：签到、抽奖，金币可换现金买游戏
  变量：bbs3dmck='cookie'  多个账号用换行分割 
- 定时一天3次
- 【3DM论坛 每日打卡】=68;【3DM论坛 热门游戏区】帖子=tid:6272162;fid:3357;
- 【3DM论坛 国产单机游戏爱好者】任务=110;【3DM论坛国产单机游戏讨论区】帖子=tid:6272166;fid:3340;
- 【3DM网游加速器助你畅玩国外内多款热门游戏！】任务=96;【3DM论坛网游加速器】帖子=tid:6272167;fid:3469;
- 【永久免费】《风灵月影》修改器工具=126;【风灵月影修改器大全】帖子=tid:6274349;fid:3217;
+ 定时一天
+
  玩家用户组【论坛常客】=70 【论坛达人】=71 【论坛居民】=72  【游戏之神】=73
- cron: 0 8,13,20 * * *
- */
+ 特殊任务：
+ cron: 0 9 * * *
+*/
 
 const $ = new Env('3dmgame论坛签到');
 const notify = $.isNode() ? require('./sendNotify') : '';
@@ -47,68 +45,54 @@ let msg = '';
 			await checkgold();
 			log('开始做论坛任务');
             //开始
-			log('做 《3DM论坛新用户注册手册-简易新手攻略》 任务')
-            await dotask('apply',127);
-			for (i = 0; i < 3; i++) {
-                await reply(6354844,406);
-                await $.wait(35 * 1000);
-			}
-            await dotask('draw',127);
+			log('做 《3DM论坛铭牌任务》 任务')
+            await dotask('apply',163);
+            await $.wait(3 * 1000);
+            await dotask('draw',163);
 			//
-			log('做 《3DM论坛发帖规则！》 任务')
-			await dotask('apply',68); //apply=接受任务，draw=完成任务
-			for (i = 0; i < 3; i++) {
-                await reply(6272162,3357);
-                await $.wait(35 * 1000);
-            }
-            await dotask('draw',68);
-            //结束
-	        log('做 《招募版主前置专贴，欢迎加入3DM论坛版主团队》 任务')
-			await dotask('apply',110); 
-			for (i = 0; i < 3; i++) {
-                await reply(6272166,3340);
-                await $.wait(35 * 1000);
-            }
-            await dotask('draw',110);
-            //
-			log('做 《3DM论坛获取相关用户组前置任务专帖》 任务')
-            await dotask('apply',96); 
-            for (i = 0; i < 3; i++) {
-                await reply(6272167,3469);
-                await $.wait(35 * 1000);
-            }
-            await dotask('draw',96);
-            //
-			log('做 《今日话题区 - 话题征集贴 - 欢迎各位坛友贡献您的话题》 任务')
-            await dotask('apply',126); 
-			for (i = 0; i < 3; i++) {
-                await reply(6274349,256);
-                await $.wait(35 * 1000);
-            }
-            await dotask('draw',126);
+			log('做 《3DM论坛勋章任务》 任务')
+            await dotask('apply',162);
+            await $.wait(3 * 1000);
+            await dotask('draw',162);
 			//
+			log('做 《3DM论坛贡献任务》 任务')
+            await dotask('apply',164);
+            await reply(6422136,256);
+            await $.wait(3 * 1000);
+            await dotask('draw',164);
+			//
+			log('做 MOD站福利 任务')
+            await dotask('apply',128); 
+            await reply(5751666,2661);
+            await $.wait(3 * 1000);
+			await dotask('draw',128);
+			//
+            log('做 《3DM论坛用户每日签到打卡》 任务')
+            await dotask('apply',171); 
+            await $.wait(2 * 1000);
+            //
 			if(njifen > 249 && njifen <= 1999 ){
 				
 				log('做 玩家用户组【论坛常客】 任务') //会按等级升级的【论坛常客】=70 【论坛达人】=71 【论坛居民】=72  【游戏之神】=73
-                await dotask('apply',70); 
+                await dotask('apply',154); 
                 await $.wait(2 * 1000);
 
 			} else if(njifen > 1999 && njifen <= 18000){
 
                 log('做 玩家用户组【论坛达人】 任务') 
-                await dotask('apply',71); 
+                await dotask('apply',155); 
                 await $.wait(2 * 1000);
 
 			} else if(njifen > 18000 && njifen <= 64999){
 
 				log('做 玩家用户组【论坛居民】 任务') 
-                await dotask('apply',72); 
+                await dotask('apply',156); 
                 await $.wait(2 * 1000);
 
 			} else if(njifen >= 65000){
 
                 log('做 玩家用户组【游戏之神】 任务') 
-                await dotask('apply',73); 
+                await dotask('apply',157); 
                 await $.wait(2 * 1000);
 
 			} else{
@@ -147,41 +131,41 @@ function dotask(task,taskid) {
 
 					log('任务申请成功 ')
 					
-				} else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 68){
+				} else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 162){
 
-					log('完成 【3DM论坛 每日打卡】任务')
-			        msg += `\n完成 【3DM论坛 每日打卡】任务`
+					log('完成 【3DM论坛勋章任务】任务')
+			        msg += `\n完成 【3DM论坛勋章任务】任务`
 
-                } else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 110){
+                } else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 163){
 
-					log('完成 【3DM论坛 国产单机游戏爱好者】任务')
-			        msg += `\n完成 【3DM论坛 国产单机游戏爱好者】任务`
+					log('完成 【3DM论坛铭牌任务】任务')
+			        msg += `\n完成 【3DM论坛铭牌任务】任务`
 					
-				} else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 96){
+				} else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 164){
 
-					log('完成 【3DM网游加速器助你畅玩国外内多款热门游戏！】任务')
-			        msg += `\n完成 【3DM网游加速器助你畅玩国外内多款热门游戏！】任务`
+					log('完成 【3DM论坛贡献任务】任务')
+			        msg += `\n完成 【3DM论坛贡献任务】任务`
 	
-                } else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 126){
+                } else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 128){
 
-					log('完成 【永久免费】《风灵月影》修改器工具 任务')
-			        msg += `\n完成 【永久免费】《风灵月影》修改器工具 任务`
+					log('完成 MOD站福利 任务')
+			        msg += `\n完成 MOD站福利 任务`
 
-				} else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 70){
+				} else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 154){
 
 					log('完成 玩家用户组【论坛常客】 任务')
 			        msg += `\n完成 玩家用户组【论坛常客】 任务`
 
-				}else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 71){
+				}else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 155){
 
                     log('完成 玩家用户组【论坛达人】 任务')
 			        msg += `\n完成 玩家用户组【论坛达人】 任务`
 
-				}else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 72){
+				}else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 156){
 
                     log('完成 玩家用户组【论坛居民】 任务')
 			        msg += `\n完成 玩家用户组【论坛居民】 任务`
-				}else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 73){
+				}else if(message == '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' && taskid == 157){
 
                     log('完成 玩家用户组【游戏之神】 任务')
 			        msg += `\n完成 玩家用户组【游戏之神】 任务`
