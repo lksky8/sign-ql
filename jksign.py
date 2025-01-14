@@ -1,14 +1,17 @@
 """
 方舟健客app签到
+作者：https://github.com/lksky8/sign-ql
+日期：2025-1-14
 
-APP抓登录包获取refresh_token填入jktoken
+使用方法：APP抓登录包获取refresh_token填入jktoken
 
 支持多用户运行,多用户用&或者@隔开
 
 则变量为
 export jktoken="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9........&eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9........"
 
-cron: 0 0,7 * * *
+每日签到一次即可
+cron: 0 5 * * *
 const $ = new Env("方舟健客签到");
 """
 import requests
