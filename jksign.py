@@ -1,14 +1,17 @@
 """
 方舟健客app签到
+作者：https://github.com/lksky8/sign-ql
+日期：2025-1-14
 
-APP抓登录包获取refresh_token填入jktoken
+使用方法：APP抓登录包获取refresh_token填入jktoken
 
 支持多用户运行,多用户用&或者@隔开
 
 则变量为
 export jktoken="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9........&eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9........"
 
-cron: 0 0,7 * * *
+每日签到一次即可
+cron: 0 5 * * *
 const $ = new Env("方舟健客签到");
 """
 import requests
@@ -50,19 +53,28 @@ def b():
         j2) + "#" + "6260"
 
 
+send_msg = ''
+one_msg = ''
+
+def Log(cont=''):
+    global send_msg, one_msg
+    if cont:
+        one_msg += f'{cont}\n'
+        send_msg += f'{cont}\n'
+
+
 
 def send_notification_message(title):
     try:
         from notify import send
         print("加载通知服务成功！")
-        send(title, msg)
+        send(title, send_msg)
     except Exception as e:
         if e:
             print('发送通知消息失败！')
 
 
 new_token = ""
-msg = ''
 
 
 def refresh_token(token):
@@ -85,7 +97,7 @@ def JK_sign():
     if dl.status_code == 200:
         try:
             print(f"本次签到获得：{dljson['coinNum']}金币，今天是本周第{dljson['cumulativeNum']}天签到")
-            msg = f"本次签到获得：{dljson['coinNum']}金币，今天是本周第{dljson['cumulativeNum']}天签到"
+            Log(f"\n本次签到获得：{dljson['coinNum']}金币，今天是本周第{dljson['cumulativeNum']}天签到") 
         except json.JSONDecodeError:
             print("出错了:", dl.text)
             msg = "出错了:", dl.text
@@ -93,10 +105,10 @@ def JK_sign():
         try:
             dljson['message'] == '今日已签到'
             print('今天已经签到了')
-            msg = '今天已经签到了'
+            Log('\n今天已经签到了')
         except json.JSONDecodeError:
             print("出错了:", dl.text)
-            msg = "出错了:", dl.text
+            Log("\n出错了:", dl.text)
     else:
         print("出错了:", dl.text)
 
