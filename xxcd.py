@@ -1,7 +1,7 @@
 """
 星星充电签到
 作者：https://github.com/lksky8/sign-ql
-日期：2025-1-14
+日期：2025-4-18
 
 使用方法：打开app随便抓一个包，把头部'Authorization'内容填入 export startoken=""
 另外可以再填入cityid可填可不填
@@ -91,8 +91,9 @@ def send_notification_message(title):
 
 
 def sign(token):
-    signature = md5_encrypt('nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a&timestamp='+time13()+'&userId=')[0:18].upper()
-    headers = {'Content-Type': 'application/x-www-form-urlencoded',
+    try:
+        signature = md5_encrypt('nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a&timestamp='+time13()+'&userId=')[0:18].upper()
+        headers = {'Content-Type': 'application/x-www-form-urlencoded',
                    'Connection': 'keep-alive',
                    'Accept-Encoding': 'gzip, deflate, br',
                    'Authorization': token,
@@ -102,14 +103,16 @@ def sign(token):
                    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
                    'Host': 'gateway.starcharge.com'
                    }
-    data = "nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a"
-    dl = requests.post(url='https://gateway.starcharge.com/apph5/webApiV2/starPoint/sign',headers=headers, data=data).json()
-    if dl['code'] == '200':
-        print(f"签到成功：获得{dl['data']['basePoint']}积分，已连续签到{dl['data']['continuousDay']}天")
-        Log(f"签到成功：获得{dl['data']['basePoint']}积分，已连续签到{dl['data']['continuousDay']}天")
-    else:
+        data = "nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a"
+        dl = requests.post(url='https://gateway.starcharge.com/apph5/webApiV2/starPoint/sign',headers=headers, data=data)
+        dl_json = dl.json()
+        if dl.status_code == '200':
+            print(f"签到成功：获得{dl_json['data']['basePoint']}积分，已连续签到{dl_json['data']['continuousDay']}天")
+            Log(f"签到成功：获得{dl_json['data']['basePoint']}积分，已连续签到{dl_json['data']['continuousDay']}天")
+    except requests.exceptions.RequestException as e:
         print("Failed to send POST request. Status Code:", dl.status_code)
         print("出错了:", dl.text)
+        print(e)
 
 
 def Get_list(token):
@@ -222,15 +225,15 @@ def main():
             print('\n----------------------')
             z = z + 1
         except Exception as e:
-            print('未知错误')
+            print(e)
 
 if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        print('未知错误')
+        print(e)
     try:
         send_notification_message(title='星星充电')  # 发送通知
     except Exception as e:
-        print('小错误')
+        print(e)
     
