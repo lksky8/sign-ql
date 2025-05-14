@@ -1,6 +1,6 @@
 /*
  作者：https://github.com/lksky8/sign-ql/
- 日期：2024-12-24
+ 日期：2025-5-14
  网站：3dmgame论坛签到
  功能：签到、抽奖，金币可换现金买游戏
  变量：bbs3dmck='cookie'  多个账号用换行分割 
@@ -55,9 +55,9 @@ let msg = '';
             await $.wait(3 * 1000);
             await dotask('draw',162);
 			//
-			log('做 《3DM论坛贡献任务》 任务')
+			log('做 《游戏新作预览》 任务')
             await dotask('apply',164);
-            await reply(6422136,256);
+            await reply(6594091,256);
             await $.wait(3 * 1000);
             await dotask('draw',164);
 			//
@@ -70,30 +70,35 @@ let msg = '';
             log('做 《3DM论坛用户每日签到打卡》 任务')
             await dotask('apply',171); 
             await $.wait(2 * 1000);
+            await dotask('draw',171); 
             //
 			if(njifen > 249 && njifen <= 1999 ){
 				
 				log('做 玩家用户组【论坛常客】 任务') //会按等级升级的【论坛常客】=70 【论坛达人】=71 【论坛居民】=72  【游戏之神】=73
                 await dotask('apply',154); 
                 await $.wait(2 * 1000);
+                await dotask('draw',154); 
 
 			} else if(njifen > 1999 && njifen <= 18000){
 
                 log('做 玩家用户组【论坛达人】 任务') 
                 await dotask('apply',155); 
                 await $.wait(2 * 1000);
+                await dotask('draw',155); 
 
 			} else if(njifen > 18000 && njifen <= 64999){
 
 				log('做 玩家用户组【论坛居民】 任务') 
                 await dotask('apply',156); 
                 await $.wait(2 * 1000);
+                await dotask('draw',156); 
 
 			} else if(njifen >= 65000){
 
                 log('做 玩家用户组【游戏之神】 任务') 
                 await dotask('apply',157); 
                 await $.wait(2 * 1000);
+                await dotask('draw',157); 
 
 			} else{
 				log('等级不足，等积分大于250再领取任务')
@@ -227,7 +232,7 @@ function checkgold(timeout = 3 * 1000) {
 			url: `https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&op=base`,
 			headers: {
 				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36",
-				"Cookie": '_ga=GA1.2.1536251836.1648362855; Hm_lvt_41e10dae8e5d7e8cc907484abce82fb9=1657789308,1657960493,1658051008,1658132409; uchome_2132_saltkey=N0oeh0PO; uchome_2132_lastvisit=1658132989; uchome_2132_visitedfid=256; uchome_2132_con_request_uri=https%3A%2F%2Fbbs.3dmgame.com%2Fconnect.php%3Fmod%3Dlogin%26op%3Dcallback%26referer%3Dforum.php%253Fmod%253Dviewthread%2526tid%253D6317997%2526extra%253Dpage%25253D1%2526page%253D1; uchome_2132_client_created=1658136795; uchome_2132_client_token=9F83FB26A02602694C2EA0912123CE08; uchome_2132_ulastactivity=1658136795%7C0; uchome_2132_auth=8fe6LugBBxo7GACQ8EZn1jmOGqVK6UOkTq7e9CKF0WuVHIQxHXkqzyKSo5zoACh6132amggoZkn9KqxHqx%2BACDe1uk9N; uchome_2132_connect_login=1; uchome_2132_connect_is_bind=1; uchome_2132_connect_uin=9F83FB26A02602694C2EA0912123CE08; uchome_2132_stats_qc_login=3; uchome_2132_security_cookiereport=e936eQMov2mrxsZ0Lpvh%2F0Wbul5lY7x6nVZzZDfQ2ILqvm5R1nr0; uchome_2132_connect_last_report_time=2022-07-18; uchome_2132_smile=1D1; uchome_2132_st_t=8145175%7C1658136816%7C342422dc82de26f408957c0e030509d3; uchome_2132_forum_lastvisit=D_256_1658136816; uchome_2132_viewid=tid_6317911; uchome_2132_st_p=8145175%7C1658137808%7C6d7884c485a5a8692ae4bfaa35716b2e; uchome_2132_lastact=1658137857%09connect.php%09check; Hm_lpvt_41e10dae8e5d7e8cc907484abce82fb9=1658137857'
+				"Cookie": `${ck}`
             },
 		}
 
