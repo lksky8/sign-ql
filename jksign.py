@@ -1,7 +1,7 @@
 """
 方舟健客app签到
 作者：https://github.com/lksky8/sign-ql
-日期：2025-1-14
+日期：2025-7-15
 
 使用方法：APP抓登录包获取refresh_token填入jktoken
 
@@ -74,41 +74,35 @@ def send_notification_message(title):
             print('发送通知消息失败！')
 
 
-new_token = ""
-
 
 def refresh_token(token):
-    global new_token
     headers = {'Content-Type': 'application/json; charset=utf-8','User-Agent': 'Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0.6778.135 Mobile Safari/537.36 jiankeMall/6.26.0(w1080*h2029)','Host': 'acgi.jianke.com','organizationCode': 'app.jianke'}
-    data = {'refreshToken': token}
-    dl = requests.post(url='https://acgi.jianke.com/passport/account/refreshToken',data=json.dumps(data),headers=headers).json()
-    if dl['token_type'] == 'bearer':
-        print("账号token刷新成功，新的access_token已填入:\n" + dl['access_token'])
-        new_token = dl['access_token']
+    data = {'refreshToken': token }
+    response = requests.post('https://acgi.jianke.com/passport/account/refreshToken', json=data, headers=headers)
+    if '授权失败' in response.text:
+        print('账号刷新token已失效，请重新获取')
+        Log('账号刷新token已失效，请重新获取')
+        return False
     else:
-        print("Failed to send POST request. Status Code:", response.status_code)
-        print("出错了:", response.text)
+        response_json = response.json()
+        if response_json['token_type'] == 'bearer':
+            print("账号token刷新成功，新的access_token已填入:\n" + response_json['access_token'])
+            return response_json['access_token']
+        else:
+            print("Failed to send POST request. Status Code:", response.status_code)
+            print("出错了:", response.text)
 
-def JK_sign():
-    global msg
+
+def JK_sign(new_token):
     headers = {'Authorization':'bearer ' + new_token,'User-Agent': 'Mozilla/5.0 (Linux; Android 10; MI 8 Build/QKQ1.190828.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/131.0.6778.135 Mobile Safari/537.36 jiankeMall/6.26.0(w1080*h2029)','X-JK-X': b(),'versionName': '6.26.0','X-JK-UDID': '19874ee7-ea2c-4043-a24a-16a14816399c'}
     dl = requests.put(url='https://acgi.jianke.com/v2/member/signConfig/sign',headers=headers)
-    dljson = dl.json()
+    dl_json = dl.json()
     if dl.status_code == 200:
-        try:
-            print(f"本次签到获得：{dljson['coinNum']}金币，今天是本周第{dljson['cumulativeNum']}天签到")
-            Log(f"\n本次签到获得：{dljson['coinNum']}金币，今天是本周第{dljson['cumulativeNum']}天签到") 
-        except json.JSONDecodeError:
-            print("出错了:", dl.text)
-            msg = "出错了:", dl.text
-    elif dl.status_code == 400:
-        try:
-            dljson['message'] == '今日已签到'
-            print('今天已经签到了')
-            Log('\n今天已经签到了')
-        except json.JSONDecodeError:
-            print("出错了:", dl.text)
-            Log("\n出错了:", dl.text)
+        print(f"本次签到获得：{dl_json['coinNum']}金币，今天是本周第{dl_json['cumulativeNum']}天签到")
+        Log(f"\n本次签到获得：{dl_json['coinNum']}金币，今天是本周第{dl_json['cumulativeNum']}天签到")
+    elif dl_json['message'] == '今日已签到':
+        print('今天已经签到了')
+        Log('\n今天已经签到了')
     else:
         print("出错了:", dl.text)
 
@@ -120,21 +114,23 @@ def main():
         try:
             print(f'登录第{z}个账号')
             print('----------------------\n')
-            accesstoken = refresh_token(ck)
-            print('\n开始签到操作>>>>>>>>>>\n')
-            JK_sign()
-            print('\n----------------------')
+            access_token = refresh_token(ck)
+            if access_token:
+                print('刷新token成功')
+                print('\n开始签到操作>>>>>>>>>>\n')
+                JK_sign(access_token)
+                print('\n----------------------')
             z = z + 1
         except Exception as e:
-            print('未知错误')
+            print('未知错误:' + str(e))
 
 if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        print('未知错误')
+        print('未知错误:' + str(e))
     try:
         send_notification_message(title='方舟健客')  # 发送通知
     except Exception as e:
-        print('小错误')
+        print('推送失败:' + str(e))
     
