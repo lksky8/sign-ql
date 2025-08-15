@@ -1,11 +1,9 @@
 """
 天翼云盘签到
-
+作者: https://github.com/lksky8/sign-ql
+日期：2025-8-16
 打开天翼云盘APP抓请求url=api.cloud.189.cn/guns/getPageBanners.action里面accessToken(一般在请求头里)填到变量cloud189_token里面即可
-
-支持多用户运行
-
-多用户用&或者@隔开
+支持多用户运行,多用户用&或者@隔开
 例如账号1：10086 账号2： 1008611
 则变量为
 export cloud189_token="10086&1008611"
