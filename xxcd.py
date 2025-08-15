@@ -1,7 +1,7 @@
 """
 星星充电签到
 作者：https://github.com/lksky8/sign-ql
-日期：2025-4-18
+日期：2025-08-14
 
 使用方法：打开app随便抓一个包，把头部'Authorization'内容填入 export startoken=""
 另外可以再填入cityid可填可不填
@@ -20,6 +20,7 @@ import re
 import os
 import datetime
 import hashlib
+import time
 
 
 if 'startoken' in os.environ:
@@ -93,25 +94,34 @@ def send_notification_message(title):
 def sign(token):
     try:
         signature = md5_encrypt('nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a&timestamp='+time13()+'&userId=')[0:18].upper()
-        headers = {'Content-Type': 'application/x-www-form-urlencoded',
-                   'Connection': 'keep-alive',
-                   'Accept-Encoding': 'gzip, deflate, br',
-                   'Authorization': token,
-                   'timestamp': time13(),
-                   'Accept': 'application/json, text/javascript, */*; q=0.01',
-                   'signature': signature,
-                   'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-                   'Host': 'gateway.starcharge.com'
-                   }
+        headers = {
+            'Host': 'gateway.starcharge.com',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+            'Referer': 'https://scm-app-h5.starcharge.com/',
+            'appVersion': '7.40.0',
+            'Origin': 'https://scm-app-h5.starcharge.com',
+            'signature': signature,
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Site': 'same-site',
+            'referrer': 'web',
+            'timestamp': time13(),
+            'positCity': cityid,
+            'Authorization': token,
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            'Accept': 'application/json, text/plain, */*',
+            'channel-id': '98',
+            'Sec-Fetch-Mode': 'cors',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
         data = "nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a"
-        dl = requests.post(url='https://gateway.starcharge.com/apph5/webApiV2/starPoint/sign',headers=headers, data=data)
-        dl_json = dl.json()
-        if dl.status_code == '200':
+        response = requests.post(url='https://gateway.starcharge.com/apph5/webApiV2/starPoint/sign',headers=headers, data=data)
+        dl_json = response.json()
+        if response.status_code == 200:
             print(f"签到成功：获得{dl_json['data']['basePoint']}积分，已连续签到{dl_json['data']['continuousDay']}天")
             Log(f"签到成功：获得{dl_json['data']['basePoint']}积分，已连续签到{dl_json['data']['continuousDay']}天")
     except requests.exceptions.RequestException as e:
-        print("Failed to send POST request. Status Code:", dl.status_code)
-        print("出错了:", dl.text)
+        print("Failed to send POST request. Status Code:", response.status_code)
+        print("出错了:", response.text)
         print(e)
 
 
@@ -178,34 +188,43 @@ def Do_task(id,token):
 
 def Get_info(token):
     try:
-        signature = md5_encrypt(
-            'city=' + cityid + '&nonce=0f597ec8-f0af-48e5-bc39-473c17c3b7ae&timestamp=' + time13() + '&userId=')[
-                    0:18].upper()
-        headers = {'Connection': 'keep-alive',
-                   'Authorization': token,
-                   'Accept': 'application/json, text/plain, */*',
-                   'positCity': cityid,
-                   'timestamp': time13(),
-                   'signature': signature,
-                   'User-Agent': 'Mozilla/5.0 (Linux; Android 12; 2112123AC Build/SKQ1.211230.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.104 Mobile Safari/537.36',
-                   'Accept-Encoding': 'gzip, deflate',
-                   'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-                   }
-        response = requests.get(
-            "https://gateway.starcharge.com/apph5/v2/webApiV2/star/point/user?city="+cityid+"&nonce=0f597ec8-f0af-48e5-bc39-473c17c3b7ae",
-            headers=headers)
-        if response.status_code == 200:
-            try:
-                response_data = response.json()
-                print(f'用户({response_data["data"]["nickName"]})目前金币：{response_data["data"]["points"]}')
-                Log(f'用户({response_data["data"]["nickName"]})目前金币：{response_data["data"]["points"]}\n')
-            except json.JSONDecodeError:
-                print("Response Content:", response.text)
+        signature = md5_encrypt('city=' + cityid + '&nonce=0f597ec8-f0af-48e5-bc39-473c17c3b7ae&timestamp=' + time13() + '&userId=')[0:18].upper()
+        headers = {
+            'Host': 'gateway.starcharge.com',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+            'Referer': 'https://scm-app-h5.starcharge.com/',
+            'appVersion': '7.40.0',
+            'Origin': 'https://scm-app-h5.starcharge.com',
+            'signature': signature,
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Site': 'same-site',
+            'referrer': 'web',
+            'timestamp': time13(),
+            'positCity': cityid,
+            'Authorization': token,
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            'Accept': 'application/json, text/plain, */*',
+            'channel-id': '98',
+            'Sec-Fetch-Mode': 'cors',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        response = requests.get("https://gateway.starcharge.com/apph5/v2/webApiV2/star/point/user?city="+cityid+"&nonce=0f597ec8-f0af-48e5-bc39-473c17c3b7ae", headers=headers)
+        response_json = response.json()
+        if response_json['code'] == '200':
+            print(f'用户({response_json["data"]["nickName"]})目前金币：{response_json["data"]["points"]}')
+            Log(f'用户({response_json["data"]["nickName"]})目前金币：{response_json["data"]["points"]}\n')
+            return True
+        elif response_json['code'] == '402':
+            print('用户数据获取失败，重新尝试获取数据')
+            print(response.text)
+            return False
         else:
-            print("Failed to send POST request. Status Code:", response.status_code)
-            print("Response Content:", response.text)
+            print(response.text)
+            return False
     except requests.exceptions.RequestException as e:
         print("An error occurred:", e)
+    except Exception as e:
+        print("出错了:", e)
 
 
 def main():
@@ -221,7 +240,10 @@ def main():
             print("本周充电任务:", Do_task(this_week_id,ck))
             print("本月充电任务:", Do_task(this_month_id,ck))
             print('\n获取用户信息>>>>>>>>>>\n')
-            Get_info(ck)
+            while True:
+                if Get_info(ck):
+                    break
+                time.sleep(3)
             print('\n----------------------')
             z = z + 1
         except Exception as e:
