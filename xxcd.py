@@ -115,10 +115,17 @@ def sign(token):
         }
         data = "nonce=2b4aa7d9-4137-4e51-94e3-7b7355bf202a"
         response = requests.post(url='https://gateway.starcharge.com/apph5/webApiV2/starPoint/sign',headers=headers, data=data)
-        dl_json = response.json()
-        if response.status_code == 200:
-            print(f"签到成功：获得{dl_json['data']['basePoint']}积分，已连续签到{dl_json['data']['continuousDay']}天")
-            Log(f"签到成功：获得{dl_json['data']['basePoint']}积分，已连续签到{dl_json['data']['continuousDay']}天")
+        response_json = response.json()
+        if response_json['code'] == '200':
+            print(f"签到成功：获得{response_json['data']['basePoint']}积分，已连续签到{response_json['data']['continuousDay']}天")
+            Log(f"签到成功：获得{response_json['data']['basePoint']}积分，已连续签到{response_json['data']['continuousDay']}天")
+            return True
+        elif response_json['code'] == '402':
+            print('用户数据获取失败，重新尝试获取数据')
+            return False
+        else:
+            print("签到失败:", response.text)
+            return False
     except requests.exceptions.RequestException as e:
         print("Failed to send POST request. Status Code:", response.status_code)
         print("出错了:", response.text)
@@ -127,9 +134,7 @@ def sign(token):
 
 def Get_list(token):
     try:
-        signature = md5_encrypt(
-            'city=' + cityid + '&nonce=c4720525-d9fd-4db7-8420-736c0ef1c63b&timestamp=' + time13() + '&userId=')[
-                    0:18].upper()
+        signature = md5_encrypt('city=' + cityid + '&nonce=c4720525-d9fd-4db7-8420-736c0ef1c63b&timestamp=' + time13() + '&userId=')[0:18].upper()
         headers = {'Connection': 'keep-alive',
                    'Authorization': token,
                    'Accept': 'application/json, text/plain, */*',
@@ -140,20 +145,16 @@ def Get_list(token):
                    'Accept-Encoding': 'gzip, deflate',
                    'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
                    }
-        response = requests.get(
-            "https://gateway.starcharge.com/apph5/webApiV2/userTask/model/list?city=" + cityid + "&nonce=c4720525-d9fd-4db7-8420-736c0ef1c63b",
-            headers=headers)
-
-        if response.status_code == 200:
-            try:
-                response_data = response.json()
-                # print("Response Data:", response_data)
-                return response_data['data']
-            except json.JSONDecodeError:
-                print("Response Content:", response.text)
+        response = requests.get("https://gateway.starcharge.com/apph5/webApiV2/userTask/model/list?city=" + cityid + "&nonce=c4720525-d9fd-4db7-8420-736c0ef1c63b",headers=headers)
+        response_json = response.json()
+        if response_json['code'] == '200':
+            return response_json['data']
+        elif response_json['code'] == '402':
+            print('用户数据获取失败，重新尝试获取数据')
+            return False
         else:
-            print("Failed to send POST request. Status Code:", response.status_code)
-            print("Response Content:", response.text)
+            print("获取任务列表:", response.text)
+            return False
     except requests.exceptions.RequestException as e:
         print("An error occurred:", e)
 
@@ -170,18 +171,27 @@ def Do_task(id,token):
                    'Accept-Encoding': 'gzip, deflate',
                    'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
                    }
-        response = requests.get(
-            "https://gateway.starcharge.com/apph5/webApiV2/userTask/get?nonce=c4720525-d9fd-4db7-8420-736c0ef1c63b&taskId="+id+"&taskType=1&timestamp="+time13()+"&userId=",
-            headers=headers)
-        if response.status_code == 200:
-            try:
-                response_data = response.json()
-                return response_data['text']
-            except json.JSONDecodeError:
-                print("Response Content:", response.text)
+        response = requests.get("https://gateway.starcharge.com/apph5/webApiV2/userTask/get?nonce=c4720525-d9fd-4db7-8420-736c0ef1c63b&taskId="+id+"&taskType=1&timestamp="+time13()+"&userId=", headers=headers)
+        response_json = response.json()
+        # if response.status_code == 200:
+        #     try:
+        #         response_data = response.json()
+        #         return response_data['text']
+        #     except json.JSONDecodeError:
+        #         print("Response Content:", response.text)
+        # else:
+        #     print("Failed to send POST request. Status Code:", response.status_code)
+        #     print("Response Content:", response.text)
+        if response_json['code'] == None:
+            return response_json['text']
+        elif response_json['code'] == '402':
+            print('用户数据获取失败，重新尝试获取数据')
+            return False
+        elif response_json['code'] == '200' and response_json['text'] == None :
+            return '任务已领取'
         else:
-            print("Failed to send POST request. Status Code:", response.status_code)
-            print("Response Content:", response.text)
+            print("做任务:", response.text)
+            return False
     except requests.exceptions.RequestException as e:
         print("An error occurred:", e)
 
@@ -216,10 +226,9 @@ def Get_info(token):
             return True
         elif response_json['code'] == '402':
             print('用户数据获取失败，重新尝试获取数据')
-            print(response.text)
             return False
         else:
-            print(response.text)
+            print('用户数据查询失败:' + response.text)
             return False
     except requests.exceptions.RequestException as e:
         print("An error occurred:", e)
@@ -234,11 +243,22 @@ def main():
             print(f'登录第{z}个账号')
             print('----------------------')
             print('\n开始签到操作>>>>>>>>>>\n')
-            sign(ck)
+            while True:
+                if sign(ck):
+                    break
+                time.sleep(3)
             print('\n完成日常任务>>>>>>>>>>\n')
-            this_week_id, this_month_id = find_task_ids(Get_list(ck))
-            print("本周充电任务:", Do_task(this_week_id,ck))
-            print("本月充电任务:", Do_task(this_month_id,ck))
+            while True:
+                result = find_task_ids(Get_list(ck))
+                if result:
+                    this_week_id, this_month_id = result
+                    print("本周充电任务:", Do_task(this_week_id,ck))
+                    print("本月充电任务:", Do_task(this_month_id,ck))
+                    break
+                time.sleep(3)
+            # this_week_id, this_month_id = find_task_ids(Get_list(ck))
+            # print("本周充电任务:", Do_task(this_week_id,ck))
+            # print("本月充电任务:", Do_task(this_month_id,ck))
             print('\n获取用户信息>>>>>>>>>>\n')
             while True:
                 if Get_info(ck):
