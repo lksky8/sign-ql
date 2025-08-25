@@ -311,7 +311,7 @@ def main():
                     do_task(task, ck)
             print('等待1分钟进行下一个账号')
             time.sleep(60)
-            log('-' * 30)
+            Log('-' * 30)
             z = z + 1
     else:
         print('无bbs3dmck变量')
