@@ -1,7 +1,7 @@
 """
 星星充电签到
 作者：https://github.com/lksky8/sign-ql
-日期：2025-08-14
+日期：2025-08-21
 
 使用方法：打开app随便抓一个包，把头部'Authorization'内容填入 export startoken=""
 另外可以再填入cityid可填可不填
