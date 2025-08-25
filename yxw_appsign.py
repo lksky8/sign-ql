@@ -1,6 +1,6 @@
 '''
 作者：https://github.com/lksky8/sign-ql/
-日期：2025-8-22
+日期：2025-8-21
 网站：游侠网APP签到
 功能：签到、抽奖，金币可换现金买游戏，配合金币脚本使用可获得更多金币
 变量：yxwlogin='账号&密码'  多个账号用@或者#分割 
@@ -542,7 +542,7 @@ if __name__ == '__main__':
 
     for item in user_data:
         print('-' * 50)
-        log('-' * 50)
+        log('-' * 35)
         user_phone = item['phone_key']
         user_name = item['user_name']
         user_token = item['token']
