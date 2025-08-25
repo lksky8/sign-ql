@@ -67,6 +67,8 @@ def user_info(ck):
     headers['cookie'] = ck
     try:
         response = requests.get('https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1', headers=headers)
+        if 'window.location.href' in response.text:
+            response = requests.get('https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1', headers=headers)
         # print(response.text)
         html = etree.HTML(response.text)
         user_id = html.xpath('//*[@id="hd"]/div/div[1]/p/strong/a/text()')[0]
@@ -173,7 +175,7 @@ def check_task(ck):
             print('-' * 50)
         else:
             print('没有可接任务')
-            Log(f'\n没有可接任务')
+            # Log(f'\n没有可接任务')
             print('-' * 50)
     except Exception as e:
         print(e)
@@ -208,7 +210,7 @@ def check_task_doing(ck):
             return task_list
         else:
             print('没有进行中的任务')
-            Log(f'\n没有进行中的任务')
+            # Log(f'\n没有进行中的任务')
             return []
     except Exception as e:
         print(e)
@@ -309,6 +311,7 @@ def main():
                     do_task(task, ck)
             print('等待1分钟进行下一个账号')
             time.sleep(60)
+            log('-' * 30)
             z = z + 1
     else:
         print('无bbs3dmck变量')
