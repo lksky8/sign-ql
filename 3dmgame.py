@@ -251,10 +251,13 @@ def do_task(tk_list,ck):
                 formhash = re.search(r'name="formhash" value="(\w+)"', response.text).group(1)
                 fid_match = re.search(r"fid\s*=\s*parseInt\('(\d+)'\)", response.text).group(1)
                 tid_match = re.search(r"tid\s*=\s*parseInt\('(\d+)'\)", response.text).group(1)
-                print(reply_count, formhash, fid_match, tid_match)
-                for _ in range(int(reply_count)):
-                    reply(tid_match, fid_match, formhash, ck)
-                    time.sleep(35)
+                print('回复次数:' + reply_count)
+                if int(reply_count) > 5:
+                    print('回复次数大于5次，任务跳过')
+                else:
+                    for _ in range(int(reply_count)):
+                        reply(tid_match, fid_match, formhash, ck)
+                        time.sleep(35)
                 print(f'已完成任务 《{task_name}》 回复指定文章要求')
             else:
                 response = requests.get(f'https://bbs.3dmgame.com/{tables}', headers=headers)
@@ -272,6 +275,12 @@ def do_task(tk_list,ck):
             response = requests.get(f'https://bbs.3dmgame.com/home.php?mod=task&do=draw&id={task_id}', headers=headers)
             if '恭喜您，任务已成功完成，您将收到奖励通知，请注意查收' in response.text:
                 print(f'任务：《{task_name}》 完成')
+            elif '您已完成该任务的' in response.text:
+                html = etree.HTML(response.text)
+                b = html.xpath('//div[@id="messagetext"]/p/text()')[0]
+                print(f'任务：《{task_name}》 失败：' + b.strip())
+            elif '您还没有开始执行任务，赶快哦' in response.text:
+                print(f'任务：《{task_name}》 失败：不完成该任务')
             else:
                 print(f'任务：《{task_name}》 失败')
                 print(response.text)
@@ -311,7 +320,7 @@ def main():
                     do_task(task, ck)
             print('等待1分钟进行下一个账号')
             time.sleep(60)
-            log('-' * 30)
+            Log('-' * 30)
             z = z + 1
     else:
         print('无bbs3dmck变量')
