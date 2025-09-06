@@ -181,7 +181,7 @@ def Do_task(task_id,token):
             'referrer': 'web',
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
             'signature': signature,
-            'positCity': '440600',
+            'positCity': cityid,
             'Origin': 'https://scm-app-h5.starcharge.com',
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
             'Referer': 'https://scm-app-h5.starcharge.com/',
