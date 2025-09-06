@@ -280,7 +280,9 @@ def do_task(tk_list,ck):
                 b = html.xpath('//div[@id="messagetext"]/p/text()')[0]
                 print(f'任务：《{task_name}》 失败：' + b.strip())
             elif '您还没有开始执行任务，赶快哦' in response.text:
-                print(f'任务：《{task_name}》 失败：不完成该任务')
+                print(f'任务：《{task_name}》 失败：因任务特殊跳过该任务')
+            elif '您还没有开始执行任务' in response.text:
+                print(f'任务：《{task_name}》 失败：因任务特殊跳过该任务')
             else:
                 print(f'任务：《{task_name}》 失败')
                 print(response.text)
