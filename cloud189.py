@@ -1,15 +1,17 @@
 """
 天翼云盘签到
-作者: https://github.com/lksky8/sign-ql
-日期：2025-8-16
-打开天翼云盘APP抓请求url=api.cloud.189.cn/guns/getPageBanners.action里面accessToken(一般在请求头里)填到变量cloud189_token里面即可
-支持多用户运行,多用户用&或者@隔开
+
+作者：https://github.com/lksky8/sign-ql
+最后更新日期：2025-9-6
+如脚本无法运行，先在青龙依赖管理的Python里面安装pycryptodome这个包
+食用方法：打开天翼云盘app抓请求url=api.cloud.189.cn/guns/getPageBanners.action里面accessToken(一般在请求头里)填到变量cloud189_token里面即可
+支持多用户运行
+多用户用&或者@隔开
 例如账号1：10086 账号2： 1008611
 则变量为
 export cloud189_token="10086&1008611"
 
 cron: 50 1,18 * * *
-const $ = new Env("天翼云盘签到");
 """
 import requests
 import time
@@ -241,6 +243,35 @@ def day_sign(sS,session_key):
         print('【天翼云盘】签到失败:' + response)
         log('【天翼云盘】签到失败:' + response)
 
+def vip_sign(session_key):
+
+    headers = {
+        'Host': 'm.cloud.189.cn',
+        'accept': 'application/json, text/plain, */*',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-dest': 'empty',
+        'accept-language': 'zh-CN,zh-Hans;q=0.9',
+        'sec-fetch-mode': 'cors',
+        'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Ecloud/10.3.11 iOS/16.6.1 clientId/027A8AB808-F7A5-431E-8B37-6BD9559D22D7 clientModel/iPhone proVersion/1.0.5',
+        'referer': 'https://m.cloud.189.cn/zt/2025/cloud-space-receive/index.html',
+    }
+
+
+    params = {
+        'noCache': str(int(time.time() *1000)),
+        'activityId': 'ACT2025VIP2T',
+        'sessionKey': session_key,
+        'prizeId': '2T_2025VIP',
+    }
+
+    response = requests.get('https://m.cloud.189.cn/market/drawTargetSpace.action', params=params, headers=headers).json()
+
+    if response['code'] == '0' and response['message'] == '成功':
+        print('【天翼云盘】2T空间月月领:领取成功')
+        log('【天翼云盘】2T空间月月领:领取成功')
+    else:
+        print('【天翼云盘】2T空间月月领:' + response['message'])
+        log('【天翼云盘】2T空间月月领:' + response['message'])
 
 def ssoLoginMerge(sk,skF,token):
     print("★" * 35 )
@@ -416,6 +447,7 @@ def main():
                 log(f'【{login_name}】登录成功')
                 print('获取到的临时Session_key:' + sessionKey)
                 day_sign(sessionSecret, sessionKey)
+                vip_sign(sessionKey)
                 print("★" * 35 + "\n")
                 ssoLoginMerge(sessionKey, login_result[3], ck)
             else:
