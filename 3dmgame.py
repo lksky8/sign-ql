@@ -1,6 +1,6 @@
 """
 作者：https://github.com/lksky8/sign-ql/
-日期：2025-9-22
+日期：2025-9-20
 网站：3dmgame论坛签到
 功能：签到、抽奖，金币可换现金买游戏
 食用方法：登录论坛后，浏览器F12打开抓包，https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1抓这个url请求头的cookie包
