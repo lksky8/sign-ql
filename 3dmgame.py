@@ -1,12 +1,13 @@
 """
 作者：https://github.com/lksky8/sign-ql/
-日期：2025-8-14
+日期：2025-9-22
 网站：3dmgame论坛签到
 功能：签到、抽奖，金币可换现金买游戏
+食用方法：登录论坛后，浏览器F12打开抓包，https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1抓这个url请求头的cookie包
 变量：bbs3dmck='cookie'  多个账号用换行分割
 定时一天三次
 青龙需要安装lxml模块
-cron: 0 9 */3 * * *
+cron: 0 9 */8 * * *
 """
 
 import time
@@ -44,20 +45,19 @@ def send_notification_message(title):
             print('发送通知消息失败！')
 
 api_headers = {
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'accept-language': 'en',
-    'cache-control': 'no-cache',
-    'pragma': 'no-cache',
-    'priority': 'u=0, i',
-    'sec-ch-ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
+    'Host': 'bbs.3dmgame.com',
+    'cache-control': 'max-age=0',
+    'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'document',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-user': '?1',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36',
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'sec-fetch-site': 'none',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-user': '?1',
+    'sec-fetch-dest': 'document',
+    'accept-language': 'zh-CN,zh;q=0.9',
 }
 
 
@@ -67,9 +67,22 @@ def user_info(ck):
     headers['cookie'] = ck
     try:
         response = requests.get('https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1', headers=headers)
-        if 'window.location.href' in response.text:
-            response = requests.get('https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1', headers=headers)
-        # print(response.text)
+        if '<script>document.cookie' in response.text:
+            print("检测到Cookie验证挑战，正在处理...")
+            cookie_pattern = r"document\.cookie\s*=\s*'([^=]+)=([^']+)'"
+            match = re.search(cookie_pattern, response.text)
+            if match:
+                cookie_name = match.group(1)
+                cookie_value = match.group(2)
+                print(f"提取到Cookie: {cookie_name}={cookie_value}")
+                # 替换 headers的cookie里面的yxd_token数据，先获取当前cookie的yxd_token值，再替换
+                old_yxd_token = re.search(f'{cookie_name}=([^;]+)', ck)
+                if old_yxd_token:
+                    old_yxd_token = old_yxd_token.group(1)
+                headers['cookie'] = ck.replace(f'{cookie_name}={old_yxd_token}', f'{cookie_name}={cookie_value}')
+                response = requests.get('https://bbs.3dmgame.com/home.php?mod=spacecp&ac=credit&showcredit=1', headers=headers)
+            else:
+                print("未从JS中提取到Cookie信息。")
         html = etree.HTML(response.text)
         user_id = html.xpath('//*[@id="hd"]/div/div[1]/p/strong/a/text()')[0]
         jifen = html.xpath('//*[@id="extcreditmenu"]/text()')[0]
@@ -321,6 +334,7 @@ def main():
                 for task in task_list:
                     do_task(task, ck)
             print('等待1分钟进行下一个账号')
+            print('*' *50)
             time.sleep(60)
             Log('-' * 30)
             z = z + 1
