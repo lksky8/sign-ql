@@ -1,7 +1,7 @@
 """
 方舟健客app签到
 作者：https://github.com/lksky8/sign-ql
-日期：2025-7-15
+日期：2025-9-8
 
 使用方法：APP抓登录包获取refresh_token填入jktoken
 
