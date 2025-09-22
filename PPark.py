@@ -2,7 +2,7 @@
 PP停车签到
 
 作者：https://github.com/lksky8/sign-ql
-最后更新日期：2025-9-10
+最后更新日期：2025-9-22
 食用方法：变量输入export pp_token=账号1#token1&账号2#token2
 支持多用户运行
 多用户用&或者@隔开
