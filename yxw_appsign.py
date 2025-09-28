@@ -1,6 +1,6 @@
 '''
 作者：https://github.com/lksky8/sign-ql/
-日期：2025-8-21
+日期：2025-9-28
 网站：游侠网APP签到
 功能：签到、抽奖，金币可换现金买游戏，配合金币脚本使用可获得更多金币
 变量：yxwlogin='账号&密码'  多个账号用@或者#分割 
@@ -334,6 +334,7 @@ def olduser_weeksigncheck(name, token):
             log(f'账号 [{name}] 【第{response_json["data"]["prizingno"]}阶段】已达成连续签到: {response_json["data"]["signday"]}天\n')
             if response_json["data"]["signday"] == 7:
                 print(f'账号 [{name}] 第七天了，可领取奖励')
+                time.sleep(5)
                 kjl(name, token)
         elif response_json['status'] == 0:
             print(f'账号 [{name}] 周签查询失败: {response_json["msg"]}')
@@ -548,7 +549,6 @@ if __name__ == '__main__':
         user_token = item['token']
         new_user_token = check_token(user_phone,user_token)
         if new_user_token:
-            userinfo(user_phone, new_user_token)
             check_sign(user_name, new_user_token)
             newusercheck(user_name, new_user_token)
             luckbox_cookies(user_phone, user_token)
@@ -565,6 +565,7 @@ if __name__ == '__main__':
                     time.sleep(1)
             else:
                 print(f'账号 [{user_phone}] BBS社区列表为空')
+            userinfo(user_phone, new_user_token)
         else:
             print(f'账号 [{user_phone}] 获取数据失败')
             continue
