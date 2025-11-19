@@ -2,7 +2,8 @@
 统一茄皇
 
 作者：https://github.com/lksky8/sign-ql
-最后更新日期：2025-10-28
+最后更新日期：2025-11-19
+预计20天成熟
 食用方法：抓包url https://api.zhumanito.cn/api/login 请求体json {"wid":"12345678910"}
 支持多用户运行
 多用户用&或者@隔开
@@ -74,8 +75,13 @@ def login(wid):
         response.raise_for_status()
         response_json = response.json()
         if response_json['code'] == 200 and response_json['msg'] == '成功':
-            print(f"登录成功")
-            Log(f"登录成功，用户ID: {wid}")
+            print(f"登录成功，用户ID: {wid}，拥有番茄：{response_json['data']['user']['fruit_num']} 个")
+            Log(f"登录成功，用户ID: {wid}，拥有番茄：{response_json['data']['user']['fruit_num']} 个")
+            if '"seed_stage":0' in response.text:
+                print(f"未种植番茄")
+                Log(f"未种植番茄")
+                time.sleep(1)
+                seed_tomato(response_json['data']['token'])
             return  response_json['data']['token']
         else:
             print(f"用户ID: {wid} 登录失败: {response_json['msg']}")
@@ -90,6 +96,54 @@ def login(wid):
     except Exception as e:
         print(f"获取用户数据时发生未知错误: {e}")
 
+
+def get_tomato(user_token):
+    headers = api_headers.copy()
+    headers['authorization'] = user_token
+
+    try:
+        response = requests.post('https://api.zhumanito.cn/api/harvest', headers=headers)
+        response.raise_for_status()
+        response_json = response.json()
+        if response_json['code'] == 200 and response_json['msg'] == '成功':
+            print(f"番茄收获成功，获得番茄：{response_json['data']['fruit_up']} 个")
+            Log(f"番茄收获成功，获得番茄：{response_json['data']['fruit_up']} 个")
+            seed_tomato(user_token)
+        else:
+            print(f"收获番茄失败: {response_json['msg']}")
+            Log(f"收获番茄失败: {response_json['msg']}")
+    except requests.RequestException as e:
+            print(f"收获番茄网络请求失败: {e}")
+    except ValueError as e:
+        print(f"收获番茄解析JSON响应失败: {e}")
+    except KeyError as e:
+        print(f"收获番茄JSON响应中缺少键: {e}")
+    except Exception as e:
+        print(f"收获番茄时发生未知错误: {e}")
+
+
+def seed_tomato(user_token):
+    headers = api_headers.copy()
+    headers['authorization'] = user_token
+
+    try:
+        response = requests.post('https://api.zhumanito.cn/api/seed', headers=headers)
+        response.raise_for_status()
+        response_json = response.json()
+        if response_json['code'] == 200 and response_json['msg'] == '成功':
+            print(f"番茄种植成功")
+            Log(f"番茄种植成功")
+        else:
+            print(f"番茄种植失败: {response_json['msg']}")
+            Log(f"番茄种植失败: {response_json['msg']}")
+    except requests.RequestException as e:
+            print(f"番茄种植网络请求失败: {e}")
+    except ValueError as e:
+        print(f"番茄种植解析JSON响应失败: {e}")
+    except KeyError as e:
+        print(f"番茄种植JSON响应中缺少键: {e}")
+    except Exception as e:
+        print(f"番茄种植时发生未知错误: {e}")
 
 def get_task(user_token):
     headers = api_headers.copy()
@@ -197,6 +251,15 @@ def water(user_token):
             print("不够水了")
             Log("不够水了")
             return False
+        elif response_json['code'] == 10007 and response_json['msg'] == '今日浇水已达到上限，请明天再来哦~':
+            print("今日浇水次数已达到上限")
+            Log("今日浇水次数已达到上限")
+            return False
+        elif response_json['code'] == 10008 and response_json['msg'] == '已成熟，不必浇灌':
+            print("番茄已成熟，自动收获")
+            Log("番茄已成熟，自动收获")
+            get_tomato(user_token)
+            return True
         else:
             print(f"浇水失败: {response_json['msg']}")
             return False
@@ -208,6 +271,7 @@ def water(user_token):
         print(f"浇水时JSON响应中缺少键: {e}")
     except Exception as e:
         print(f"浇水时发生未知错误: {e}")
+
 
 def view_page(wid):
     headers = {
