@@ -1,7 +1,7 @@
 """
 方舟健客app签到
 作者：https://github.com/lksky8/sign-ql
-日期：2025-9-8
+日期：2025-12-5
 
 使用方法：APP抓登录包获取refresh_token填入jktoken
 
@@ -15,21 +15,14 @@ cron: 0 5 * * *
 const $ = new Env("方舟健客签到");
 """
 import time
-
 import requests
 import re
 import os
 import datetime
 import hashlib
-import json
 
-
-if 'jktoken' in os.environ:
-    jktoken = re.split("@|&",os.environ.get("jktoken"))
-    print(f'查找到{len(jktoken)}个账号')
-else:
-    jktoken =['']
-    print('无jktoken变量')
+#推送开关，开启为True，关闭为False
+push_message = True
 
 
 def md5_encrypt(text):
@@ -234,54 +227,62 @@ def get_userinfo(new_token):
     response = requests.get('https://fe-acgi.jianke.com/v5/userCenter', headers=headers)
     response_json = response.json()
     if response_json['statusCode'] == 200:
-        user_nickname = response_json['data']['memberInfo']['nickName']
-        return user_nickname
+        return response_json['data']['memberInfo']['nickName']
     else:
         print('获取用户信息失败')
         print(response.text)
         return None
 
-def main():
-    z = 1
-    for ck in jktoken:
-        try:
-            print(f'登录第{z}个账号')
-            print('----------------------\n')
-            access_token = refresh_token(ck)
-            if access_token:
-                user_nickname = get_userinfo(access_token)
-                print(f'[{user_nickname}] 刷新token成功')
-                print('\n开始签到操作>>>>>>>>>>\n')
-                do_sign(access_token, user_nickname)
-                print('\n开始执行任务>>>>>>>>>>\n')
-                task_data = get_today_tasks(access_token, user_nickname)
-                if task_data:
-                    for task in task_data:
-                        task_id = task['task_id']
-                        task_name = task['task_name']
-                        # print(f'[{user_nickname}] 开始执行任务：{task_name}')
-                        if task_name == '每日一答':
-                            today_question(access_token, task_id, user_nickname)
-                            continue
-                        if task_name == '下单返币':
-                            continue
-                        do_task(access_token, user_nickname, task_id, task_name)
-                        time.sleep(1)
-                        task_receive(access_token, user_nickname, task_id, task_name)
-                        time.sleep(3)
-                get_coin(access_token, user_nickname)
-                print('\n----------------------')
-            z = z + 1
-        except Exception as e:
-            print('未知错误:' + str(e))
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        print('未知错误:' + str(e))
-    try:
-        send_notification_message(title='方舟健客')  # 发送通知
-    except Exception as e:
-        print('推送失败:' + str(e))
+    if 'jktoken' in os.environ:
+        jktoken = re.split("@|&", os.environ.get("jktoken"))
+        print(f'查找到{len(jktoken)}个账号')
+    else:
+        jktoken = []
+        print('未填写 jktoken 变量')
+
+    if jktoken:
+        try:
+            z = 1
+            for ck in jktoken:
+                print(f'登录第{z}个账号')
+                print('----------------------\n')
+                access_token = refresh_token(ck)
+                if access_token:
+                    user_nickname = get_userinfo(access_token)
+                    print(f'[{user_nickname}] 刷新token成功')
+                    print('\n开始签到操作>>>>>>>>>>\n')
+                    do_sign(access_token, user_nickname)
+                    print('\n开始执行任务>>>>>>>>>>\n')
+                    task_data = get_today_tasks(access_token, user_nickname)
+                    if task_data:
+                        for task in task_data:
+                            task_id = task['task_id']
+                            task_name = task['task_name']
+                            # print(f'[{user_nickname}] 开始执行任务：{task_name}')
+                            if task_name == '每日一答':
+                                today_question(access_token, task_id, user_nickname)
+                                time.sleep(1)
+                                task_receive(access_token, user_nickname, task_id, task_name)
+                                time.sleep(2)
+                                continue
+                            if task_name == '下单返币':
+                                continue
+                            if task_name == '打开健客医生App':
+                                continue
+                            do_task(access_token, user_nickname, task_id, task_name)
+                            time.sleep(1)
+                            task_receive(access_token, user_nickname, task_id, task_name)
+                            time.sleep(3)
+                    get_coin(access_token, user_nickname)
+                    print('\n----------------------')
+                z = z + 1
+        except Exception as e:
+            print('未知错误:' + str(e))
+    if push_message:
+        try:
+            send_notification_message(title='方舟健客')  # 发送通知
+        except Exception as e:
+            print('推送失败:' + str(e))
     
