@@ -2,8 +2,7 @@
 统一茄皇
 
 作者：https://github.com/lksky8/sign-ql
-最后更新日期：2025-11-19
-预计20天成熟
+最后更新日期：2025-12-11
 食用方法：抓包url https://api.zhumanito.cn/api/login 请求体json {"wid":"12345678910"}
 支持多用户运行
 多用户用&或者@隔开
@@ -271,6 +270,8 @@ def water(user_token):
         print(f"浇水时JSON响应中缺少键: {e}")
     except Exception as e:
         print(f"浇水时发生未知错误: {e}")
+    finally:
+        time.sleep(3)
 
 
 def view_page(wid):
@@ -310,17 +311,17 @@ if __name__ == '__main__':
                 if task['task_name'] == '浏览指定页面':
                     view_page(wid)
                     print('任务: 浏览指定页面 成功')
+                    time.sleep(3)
                     continue
                 task_complete(token, task['task_id'], task['task_name'])
-                time.sleep(1)
+                time.sleep(3)
             print('-' * 30)
             while water(token):
-                time.sleep(1)
                 pass
             get_task_again(token)
             Log('\n')
             z += 1
-            time.sleep(2)
+            time.sleep(10)
     else:
         print('请填入tyqh变量')
         Log('请填入tyqh变量')
